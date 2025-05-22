@@ -13,6 +13,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 import datetime
+import dj_database_url
 from datetime import timedelta
 load_dotenv()
 
@@ -24,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0+9rw5am%0vls9g*t%=2=2=xi1%5#^wo55$2w%t4(i!d2-bl9z'
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-insecure-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -113,14 +114,10 @@ WSGI_APPLICATION = 'skarvi.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',        
-        'NAME': 'skarvi',
-        'USER': 'postgres',
-        'PASSWORD': '8348',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),  # This gets the Railway DB URL
+        conn_max_age=600
+    )
 }
 
 # REST framework configuration
