@@ -114,12 +114,21 @@ WSGI_APPLICATION = 'skarvi.wsgi.application'
 # }
 
 # Database
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv("DATABASE_URL"),  # This gets the Railway DB URL
-        conn_max_age=600
-    )
-}
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    }
+else:
+    # Fallback for local development or if DATABASE_URL is not set
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't') 
 
 # REST framework configuration
 REST_FRAMEWORK = {
