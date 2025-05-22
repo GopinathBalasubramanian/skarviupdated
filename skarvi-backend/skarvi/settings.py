@@ -58,13 +58,13 @@ INSTALLED_APPS = [
     'login',
     'drf_yasg', 
 ]
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+#     'ROTATE_REFRESH_TOKENS': True,
+#     'BLACKLIST_AFTER_ROTATION': True,
+#     'AUTH_HEADER_TYPES': ('Bearer',),
+# }
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',  
@@ -135,13 +135,8 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
-]
+CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
+CSRF_TRUSTED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
 
 # Enable CSRF cookie
 CSRF_COOKIE_HTTPONLY = False

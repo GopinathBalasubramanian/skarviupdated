@@ -134,6 +134,7 @@ class HedgingAPIView(APIView):
                     pricing_period_to=data.get('pricing_period_to'),
                     traded_on=data.get('traded_on'),
                     quantity_mt=data.get('quantity_mt'),
+                    quantitybbl=data.get('quantity'),
                     broker_name=data.get('broker_name', ''),
                     counterparty=clean_value(data.get('counterparty', '')),
                     group_name=data.get('group_name', ''),
@@ -193,6 +194,7 @@ class HedgingAPIView(APIView):
                 trade.pricing_period_to = data.get('pricing_period_to', trade.pricing_period_to)
                 trade.traded_on = data.get('traded_on', trade.traded_on)
                 trade.quantity_mt = data.get('quantity_mt',trade.quantity_mt)
+                trade.quantitybbl = data.get('quantity', trade.quantity)
                 trade.broker_name = data.get('broker_name', trade.broker_name)
                 trade.counterparty = clean_value(data.get('counterparty', trade.counterparty))
                 trade.group_name = data.get('group_name',trade.group_name)

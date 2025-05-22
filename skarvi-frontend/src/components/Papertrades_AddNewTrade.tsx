@@ -20,6 +20,7 @@ interface FormData {
   pricing_basis2: string;
   traded_on: string;
   quantitybbL: string;
+  quantity: string;
   pricing_period_to: string;
   due_date: string;
   email_id: string;
@@ -46,6 +47,7 @@ const AddNewTrade: React.FC = () => {
     pricing_basis2: "",
     traded_on: "",
     quantitybbL: "",
+    quantity: "",
     pricing_period_to: "",
     due_date: "",
     email_id: "",
@@ -60,6 +62,8 @@ const AddNewTrade: React.FC = () => {
   const [brokerCharges, setBrokerCharges] = useState<string[]>([]);
   const [pricing_basis2, setPricingQuotation] = useState<string[]>([]);
   const [counterparty, setCounterpartyList] = useState<string[]>([]);
+  const [quantity, setQuantity] = useState<string[]>([]);
+
 
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,6 +106,9 @@ const AddNewTrade: React.FC = () => {
           );
           setCounterpartyList(
             [...new Set(data.map((t: FormData) => t.counterparty).filter(Boolean))] as string[]
+          );
+          setQuantity(
+            [...new Set(data.map((t: FormData) => t.quantity).filter(Boolean))] as string[]
           );
         }
       } catch (err) {
@@ -231,6 +238,7 @@ const AddNewTrade: React.FC = () => {
           pricing_basis2: "",
           traded_on: "",
           quantitybbL: "",
+          quantity: "",
           pricing_period_to: "",
           due_date: "",
           email_id: "",
@@ -370,8 +378,8 @@ const AddNewTrade: React.FC = () => {
                   />
                 </div>
               </Form.Group>
-              <Form.Group controlId="quantityBBL" className="mt-3">
-                <Form.Label>quantity BBL</Form.Label>
+              <Form.Group controlId="quantitybbL">
+                <Form.Label className="mt-3">Quantity BBL</Form.Label>
                 <Form.Control
                   type="number"
                   name="quantitybbL"
@@ -381,6 +389,7 @@ const AddNewTrade: React.FC = () => {
                   step="0.01"
                 />
               </Form.Group>
+
             </Col>
 
             {/* Column 3 */}
