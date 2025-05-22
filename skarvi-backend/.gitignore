@@ -1,3 +1,28 @@
+# Python
 __pycache__/
+*.py[cod]
+
+# Environment
 .env
-env/
+*.sqlite3
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+
+# VSCode or IDEs
+.vscode/
+.idea/
+
+# Node
+node_modules/
+build/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
