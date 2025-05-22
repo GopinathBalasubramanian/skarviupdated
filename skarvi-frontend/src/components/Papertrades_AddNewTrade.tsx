@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Row, Col, Button, Spinner, Alert } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-
-const API_URL = 'http://127.0.0.1:8000';
+import { API_URL } from "../utils/utils";
 
 interface FormData {
   id?: string;
@@ -19,7 +18,7 @@ interface FormData {
   traded_by?: string;
   pricing_basis2: string;
   traded_on: string;
-  quantitybbL: string;
+  quantitybbl: string;
   quantity: string;
   pricing_period_to: string;
   due_date: string;
@@ -46,77 +45,16 @@ const AddNewTrade: React.FC = () => {
     traded_by: "",
     pricing_basis2: "",
     traded_on: "",
-    quantitybbL: "",
-    quantity: "",
+    quantitybbl: "",
+    quantity: "", // 'quantity' is also part of your interface, but not used in the initial state or input fields
     pricing_period_to: "",
     due_date: "",
     email_id: "",
   });
 
-  // Dropdown options
-  const [allTrades, setAllTrades] = useState<FormData[]>([]);
-  const [brokerNames, setBrokerNames] = useState<string[]>([]);
-  const [groupNames, setGroupNames] = useState<string[]>([]);
-  const [tradedByList, setTradedByList] = useState<string[]>([]);
-  const [brokerChargesUnit, setChargesUnit] = useState<string[]>([]);
-  const [brokerCharges, setBrokerCharges] = useState<string[]>([]);
-  const [pricing_basis2, setPricingQuotation] = useState<string[]>([]);
-  const [counterparty, setCounterpartyList] = useState<string[]>([]);
-  const [quantity, setQuantity] = useState<string[]>([]);
-
-
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
-  // Fetch all trades to extract unique dropdown values
-  useEffect(() => {
-    const fetchTrades = async () => {
-      try {
-        const accessToken = localStorage.getItem("access_token");
-        const response = await fetch(`${API_URL}/paper_trades/hedging/`, {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setAllTrades(data);
-
-          // Extract unique broker names, group names, traded by
-         setBrokerNames(
-            [...new Set(data.map((t: FormData) => t.broker_name).filter(Boolean))] as string[]
-          );
-          setGroupNames(
-            [...new Set(data.map((t: FormData) => t.group_name).filter(Boolean))] as string[]
-          );
-          setTradedByList(
-            [...new Set(data.map((t: FormData) => t.traded_by).filter(Boolean))] as string[]
-          );
-          setChargesUnit(
-            [...new Set(data.map((t: FormData) => t.charges_unit).filter(Boolean))] as string[]
-          );
-          setBrokerCharges(
-            [...new Set(data.map((t: FormData) => t.broker_charges).filter(Boolean))] as string[]
-          );
-          setPricingQuotation(
-            [...new Set(data.map((t: FormData) => t.pricing_basis2).filter(Boolean))] as string[]
-          );
-          setCounterpartyList(
-            [...new Set(data.map((t: FormData) => t.counterparty).filter(Boolean))] as string[]
-          );
-          setQuantity(
-            [...new Set(data.map((t: FormData) => t.quantity).filter(Boolean))] as string[]
-          );
-        }
-      } catch (err) {
-        // handle error if needed
-      }
-    };
-    fetchTrades();
-  }, []);
 
   // Set form data if editing
   useEffect(() => {
@@ -124,6 +62,16 @@ const AddNewTrade: React.FC = () => {
       setFormData(prev => ({
         ...prev,
         ...tradeData,
+        // Ensure numeric fields are correctly handled when coming from tradeData
+        // Convert numbers back to strings for input fields if they are stored as numbers in tradeData
+        // Or ensure your backend always sends them as strings.
+        // For 'quantitybbl', if it's coming as a number, convert to string for the input field.
+        quantitybbl: String(tradeData.quantitybbl || ""),
+        quantity_mt: String(tradeData.quantity_mt || ""),
+        fixed_price: String(tradeData.fixed_price || ""),
+        broker_charges: String(tradeData.broker_charges || ""),
+        due_date: String(tradeData.due_date || ""),
+        // Add other numeric fields here if necessary
       }));
     }
     // eslint-disable-next-line
@@ -143,7 +91,7 @@ const AddNewTrade: React.FC = () => {
     const requiredFields = [
       "tran_ref_no",
       "transaction_type",
-      "fixed_price",
+      "fixed_price", // Make sure this is validated as a number if it's required to be a number
       "pricing_period_from",
       "pricing_period_to",
       "traded_on"
@@ -153,7 +101,48 @@ const AddNewTrade: React.FC = () => {
         return `Please fill in the required field: ${field}`;
       }
     }
+
+    // Additional validation for numeric fields if they are optional but need to be numbers if provided
+    const numericFields = ["quantity_mt", "fixed_price", "broker_charges", "quantitybbl", "due_date"];
+    for (const field of numericFields) {
+      const value = formData[field as keyof FormData];
+      if (value !== "" && isNaN(Number(value))) {
+        return `Please enter a valid number for ${field}`;
+      }
+    }
+
     return null;
+  };
+
+  // Helper function to convert empty strings to null for numeric fields
+  const convertEmptyStringsToNull = (data: FormData) => {
+    const newData: any = { ...data };
+    const numericFields = [
+      "quantity_mt",
+      "fixed_price",
+      "broker_charges",
+      "quantitybbl",
+      "quantity", // if 'quantity' is also a number field
+      "due_date",
+    ];
+
+    numericFields.forEach(field => {
+      if (newData[field] === "") {
+        newData[field] = null; // Or 0, depending on backend expectation for missing numeric values
+      }
+    });
+
+    // Ensure date fields are formatted correctly if necessary, or sent as is if backend handles it
+    // For example, if your backend expects YYYY-MM-DD for empty dates, you might send null or ""
+    const dateFields = ["pricing_period_from", "pricing_period_to", "traded_on", "due_date"];
+    dateFields.forEach(field => {
+      if (newData[field] === "") {
+        newData[field] = null; // Or "" if your backend expects empty string for empty dates
+      }
+    });
+
+
+    return newData;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -175,9 +164,21 @@ const AddNewTrade: React.FC = () => {
       ? `${API_URL}/paper_trades/hedging/${formData.id}`
       : `${API_URL}/paper_trades/hedging/`;
 
+    // Process payload to convert empty strings for numeric fields
+    const payload = convertEmptyStringsToNull({ ...formData });
+
     // Remove id from payload if creating new
-    const payload = { ...formData };
     if (!isUpdate) delete payload.id;
+    // Remove 'quantitybbl' if 'quantity' is the primary field the backend expects
+    // Based on your interface, you have both `quantitybbl` and `quantity`.
+    // If your backend only expects one, you might need to map them or remove the redundant one.
+    // For now, let's assume `quantitybbl` is the one you intend to send.
+    // However, your useEffect suggests `quantitybbl` might sometimes come from `tradeData.quantity`,
+    // so consider if these two fields are truly distinct or one is a fallback.
+    // If 'quantity' is just a placeholder and 'quantitybbl' is always what you send, you can
+    // remove `delete payload.quantity;` from the initial state if you never intend to use it.
+    // If `quantity` is meant to be an alias or alternative, you might need to set one based on the other.
+    // Given the error is on `quantitybbl`, we focus on that.
 
     const makeRequest = async (token: string | null) => {
       return await fetch(url, {
@@ -211,17 +212,26 @@ const AddNewTrade: React.FC = () => {
           } else {
             throw new Error("Invalid access token received.");
           }
+        } else {
+          // If refresh token fails, clear tokens and navigate to login
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          navigate('/login'); // Assuming you have a login route
+          throw new Error("Failed to refresh token. Please log in again.");
         }
       }
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `Failed to ${isUpdate ? 'update' : 'create'} trade`);
+        // More detailed error handling from the backend response
+        const errorMessage = data.non_field_errors?.[0] || data.detail || JSON.stringify(data);
+        throw new Error(errorMessage || `Failed to ${isUpdate ? 'update' : 'create'} trade`);
       }
 
       setSuccess(true);
 
       if (!isUpdate) {
+        // Reset form for new entry, ensuring quantitybbl and others are reset to empty string
         setFormData({
           id: "",
           tran_ref_no: "",
@@ -237,8 +247,8 @@ const AddNewTrade: React.FC = () => {
           traded_by: "",
           pricing_basis2: "",
           traded_on: "",
-          quantitybbL: "",
-          quantity: "",
+          quantitybbl: "", // Reset to empty string
+          quantity: "", // Reset to empty string
           pricing_period_to: "",
           due_date: "",
           email_id: "",
@@ -309,8 +319,8 @@ const AddNewTrade: React.FC = () => {
                   required
                 />
               </Form.Group>
-              <Form.Group controlId="quantityMT" className="mt-3">
-                <Form.Label>quantity MT</Form.Label>
+              <Form.Group controlId="quantityMT">
+                <Form.Label className="mt-3">quantity MT</Form.Label>
                 <Form.Control
                   type="number"
                   name="quantity_mt"
@@ -319,29 +329,38 @@ const AddNewTrade: React.FC = () => {
                   min="0"
                   step="0.01"
                 />
-                </Form.Group>
-                <Form.Label className="mt-3">Fixed Price</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="fixed_price"
-                  value={formData.fixed_price}
-                  onChange={handleChange}
-                  min="0"
-                  step="0.01"
-                  required
-                />
+              </Form.Group>
+              <Form.Group controlId="fixed_price">
+
+              <Form.Label className="mt-3">Fixed Price</Form.Label>
+              <Form.Control
+                type="number"
+                name="fixed_price"
+                value={formData.fixed_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                required
+              />
+              </Form.Group>
               <Form.Group controlId="pricingQuotation">
                 <Form.Label className="mt-3">Pricing Quotation</Form.Label>
-                <Form.Select
+                <Form.Control
+                  type="text"
                   name="pricing_basis2"
                   value={formData.pricing_basis2}
                   onChange={handleChange}
-                >
-                  <option value="">Select</option>
-                  {pricing_basis2.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </Form.Select>
+                />
+              </Form.Group>
+              <Form.Group controlId="tradedOn">
+                <Form.Label className="mt-3">Trade Created on</Form.Label>
+                <Form.Control
+                  type="date"
+                  name="traded_on"
+                  value={formData.traded_on}
+                  onChange={handleChange}
+                  required
+                />
               </Form.Group>
             </Col>
 
@@ -349,24 +368,27 @@ const AddNewTrade: React.FC = () => {
             <Col md={3}>
               <Form.Group controlId="brokerName">
                 <Form.Label>Broker name</Form.Label>
-                <Form.Select
+                <Form.Control
+                  type="text"
                   name="broker_name"
                   value={formData.broker_name}
                   onChange={handleChange}
-                >
-                  <option value="">Select</option>
-                  {brokerNames.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </Form.Select>
+                />
               </Form.Group>
-              <Form.Group controlId="transaction_type" className="mt-3">
-                <Form.Label>Bought/Sold</Form.Label>
-                <Form.Select name="transaction_type" value={formData.transaction_type} onChange={handleChange} required>
+              <Form.Group controlId="transaction_type">
+                <Form.Label className="mt-3">Bought/Sold</Form.Label>
+                <Form.Select
+                  name="transaction_type"
+                  value={formData.transaction_type}
+                  onChange={handleChange}
+                  required
+                >
                   <option value="">Select</option>
                   <option value="Bought">Bought</option>
                   <option value="Sold">Sold</option>
                 </Form.Select>
+              </Form.Group>
+                <Form.Group controlId="pricing_period_from" >
                 <Form.Label className="mt-3">Pricing Period From</Form.Label>
                 <div className="flex-grow-1">
                   <Form.Control
@@ -378,18 +400,16 @@ const AddNewTrade: React.FC = () => {
                   />
                 </div>
               </Form.Group>
-              <Form.Group controlId="quantitybbL">
+              <Form.Group controlId="quantitybbl">
                 <Form.Label className="mt-3">Quantity BBL</Form.Label>
                 <Form.Control
                   type="number"
-                  name="quantitybbL"
-                  value={formData.quantitybbL}
+                  name="quantitybbl"
+                  value={formData.quantitybbl}
                   onChange={handleChange}
                   min="0"
-                  step="0.01"
                 />
               </Form.Group>
-
             </Col>
 
             {/* Column 3 */}
@@ -402,24 +422,20 @@ const AddNewTrade: React.FC = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select</option>
-                  {brokerChargesUnit.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
                 </Form.Select>
-                </Form.Group>
+              </Form.Group>
               <Form.Group controlId="Counterparty">
                 <Form.Label className="mt-3">Counterparty</Form.Label>
-                <Form.Select
+                <Form.Control
+                  type="text"
                   name="counterparty"
                   value={formData.counterparty}
                   onChange={handleChange}
-                >
-                  <option value="">Select</option>
-                  {counterparty.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </Form.Select>
-                <div className="flex-grow-1">
+                />
+              </Form.Group>
+              <Form.Group controlId="pricing_period_to">
                   <Form.Label className="mt-3">Pricing Period To</Form.Label>
                   <Form.Control
                     type="date"
@@ -428,10 +444,9 @@ const AddNewTrade: React.FC = () => {
                     onChange={handleChange}
                     required
                   />
-                </div>
               </Form.Group>
-              <Form.Group controlId="emailID" className="mt-3">
-                <Form.Label>Email ID</Form.Label>
+              <Form.Group controlId="emailID" >
+                <Form.Label className="mt-3">Email ID</Form.Label>
                 <Form.Control
                   type="email"
                   name="email_id"
@@ -443,48 +458,36 @@ const AddNewTrade: React.FC = () => {
 
             {/* Column 4 */}
             <Col md={3}>
-            <Form.Group controlId="brokerCharges">
+              <Form.Group controlId="brokerCharges">
                 <Form.Label>Broker Charges</Form.Label>
-                <Form.Select
+                <Form.Control
+                  type="text" // Keep as text to allow flexible input, but convert to number for backend
                   name="broker_charges"
                   value={formData.broker_charges}
                   onChange={handleChange}
-                >
-                  <option value="">Select</option>
-                  {brokerCharges.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </Form.Select>
+                />
               </Form.Group>
 
-              <Form.Group controlId="groupName" className="mt-3">
-                <Form.Label>Group Name</Form.Label>
-                <Form.Select
+              <Form.Group controlId="groupName">
+                <Form.Label className="mt-3">Group Name</Form.Label>
+                <Form.Control
+                  type="text"
                   name="group_name"
                   value={formData.group_name}
                   onChange={handleChange}
-                >
-                  <option value="">Select</option>
-                  {groupNames.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </Form.Select>
+                />
               </Form.Group>
-              <Form.Group controlId="tradedBy" className="mt-3">
-                <Form.Label>Traded By</Form.Label>
-                <Form.Select
+              <Form.Group controlId="tradedBy">
+                <Form.Label className="mt-3">Traded By</Form.Label>
+                <Form.Control
+                  type="text"
                   name="traded_by"
                   value={formData.traded_by}
                   onChange={handleChange}
-                >
-                  <option value="">Select</option>
-                  {tradedByList.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </Form.Select>
+                />
               </Form.Group>
-              <Form.Group controlId="due_date" className="mt-3">
-                <Form.Label>Due date (in days)</Form.Label>
+              <Form.Group controlId="due_date">
+                <Form.Label className="mt-3">Due date (in days)</Form.Label>
                 <Form.Control
                   type="number"
                   name="due_date"
@@ -496,11 +499,11 @@ const AddNewTrade: React.FC = () => {
             </Col>
           </Row>
 
-          {/* Second Row */}
+          {/* Second Row - Empty, can be removed if not used */}
           <Row>
             <Col md={3}>
-              <Form.Group controlId="tradedOn" className="mt-3">
-                <Form.Label>Trade Created on</Form.Label>
+              {/* <Form.Group controlId="tradedOn">
+                <Form.Label className="mt-3">Trade Created on</Form.Label>
                 <Form.Control
                   type="date"
                   name="traded_on"
@@ -508,7 +511,7 @@ const AddNewTrade: React.FC = () => {
                   onChange={handleChange}
                   required
                 />
-              </Form.Group>
+              </Form.Group> */}
             </Col>
             <Col md={3}></Col>
             <Col md={3}></Col>

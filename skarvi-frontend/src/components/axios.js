@@ -1,8 +1,9 @@
 // src/axios.js
 import axios from 'axios';
+import { API_URL } from '../utils/utils';
 
 const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  API_URL: API_URL,
 });
 
 instance.interceptors.request.use(

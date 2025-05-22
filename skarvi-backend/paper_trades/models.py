@@ -46,6 +46,7 @@ class HedgingSpr(models.Model):
     pricing_basis1 = models.CharField(max_length=255, null=True)
     pricing_basis2 = models.CharField(max_length=255, null=True)
     quantity = models.IntegerField(null=True, blank=True)
+    quantitybbl = models.IntegerField(null=True, blank=True)
     quantity_mt = models.IntegerField(null=True)
     fixed_price = models.DecimalField(max_digits=20, decimal_places=2, null=True)
     pricing_period_from = models.DateField(null=True)

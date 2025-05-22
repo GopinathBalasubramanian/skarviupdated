@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddNewTrade from '../components/Papertrades_AddNewTrade';
 import { Color } from 'antd/es/color-picker';
+import { API_URL } from "../utils/utils";
+
 
 
 interface editid{
@@ -46,7 +48,6 @@ const PaperTradesTable = () => {
   transactionRef: '',
   type: '',});
 
-  const API_BASE_URL = 'http://127.0.0.1:8000';
   const accessToken = localStorage.getItem("access_token");
 
 
@@ -80,7 +81,7 @@ const PaperTradesTable = () => {
     useEffect(() => {
       const fetchTrades = async () => {
         try {
-          const response = await fetch(`${API_BASE_URL}/paper_trades/hedging/`, {
+          const response = await fetch(`${API_URL}/paper_trades/hedging/`, {
             headers: {
               'Authorization': `Bearer ${accessToken}`, 
               'Content-Type': 'application/json',
@@ -117,7 +118,7 @@ const handleDelete = async (id: number) => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/paper_trades/hedging/${id}`, {
+      const response = await fetch(`${API_URL}/paper_trades/hedging/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -149,7 +150,7 @@ const handleDelete = async (id: number) => {
 
   const handleEdit = async (id: number) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/paper_trades/hedging/${id}`, {
+    const response = await fetch(`${API_URL}/paper_trades/hedging/${id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -230,7 +231,7 @@ const handleUpload = async () => {
     formData.append('file', uploadedFile);
 
     try {
-        const response = await fetch(`${API_BASE_URL}/paper_trades/upload-trades/`, {
+        const response = await fetch(`${API_URL}/paper_trades/upload-trades/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,

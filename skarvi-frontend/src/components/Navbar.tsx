@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../components/Navbar.css";
+import { API_URL } from "../utils/utils";
 
 const CustomNavbar: React.FC = () => {
   const [ALink, setALink] = useState<string>("db");
@@ -16,7 +17,7 @@ const CustomNavbar: React.FC = () => {
     try {
       if (refreshToken && accessToken) {
         await axios.post(
-          "http://localhost:8000/api/auth/logout/",
+          `${API_URL}/api/auth/logout/`, 
           { refresh: refreshToken },
           {
             headers: {
