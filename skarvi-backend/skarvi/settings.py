@@ -147,7 +147,7 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = False
 # CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000', "https://skarvi-frontend-cloud.vercel.app"]
+# CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000', "https://skarvi-frontend-cloud.vercel.app","https://skarvi-frontend-cloud-mjmx18zns.vercel.app"]
 # CSRF_TRUSTED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
 
 
@@ -163,12 +163,14 @@ CORS_ALLOWED_ORIGINS = [
     "https://skarvi-frontend-cloud.vercel.app",  # Vercel frontend
     "http://localhost:5173",                     # Local frontend (Vite dev)
     "http://127.0.0.1:5173", 
+    "https://skarvi-frontend-cloud-mjmx18zns.vercel.app", 
     'https://skarvi-frontend-cloud.vercel.app',
     "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://skarvi-frontend-cloud.vercel.app",
+    "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",
     "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 ]
 
