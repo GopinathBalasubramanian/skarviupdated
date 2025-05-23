@@ -155,7 +155,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'xn0tvwlm-8000.inc1.devtunnels.ms',
-    'https://skarvi-frontend-cloud.vercel.app/',
+    'https://skarvi-frontend-cloud.vercel.app',
     'skarviupdated-production-b1de.up.railway.app',
 ]
 
@@ -163,7 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://skarvi-frontend-cloud.vercel.app",  # Vercel frontend
     "http://localhost:5173",                     # Local frontend (Vite dev)
     "http://127.0.0.1:5173", 
-    'https://skarvi-frontend-cloud.vercel.app/',
+    'https://skarvi-frontend-cloud.vercel.app',
     "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 ]
 
