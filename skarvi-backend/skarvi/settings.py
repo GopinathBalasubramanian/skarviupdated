@@ -158,16 +158,17 @@ ALLOWED_HOSTS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://skarvi-frontend-cloud.vercel.app",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "https://xn0tvwlm-8000.inc1.devtunnels.ms",
+    "https://skarvi-frontend-cloud.vercel.app",  # Vercel frontend
+    "http://localhost:5173",                     # Local frontend (Vite dev)
+    "http://127.0.0.1:5173", 
+    "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://skarvi-frontend-cloud.vercel.app",
-    "http://localhost:3000",
+    "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 ]
+
 
 # Enable CSRF cookie
 CSRF_COOKIE_HTTPONLY = False
