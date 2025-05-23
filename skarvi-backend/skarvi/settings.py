@@ -151,28 +151,41 @@ CORS_ALLOW_CREDENTIALS = False
 # CSRF_TRUSTED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
 
 
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1',
+#     'xn0tvwlm-8000.inc1.devtunnels.ms',
+#     'skarvi-frontend-cloud.vercel.app',
+#     'skarviupdated-production-b1de.up.railway.app',
+# ]
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'xn0tvwlm-8000.inc1.devtunnels.ms',
-    'skarvi-frontend-cloud.vercel.app',
     'skarviupdated-production-b1de.up.railway.app',
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://skarvi-frontend-cloud.vercel.app",  # Vercel frontend
-    "http://localhost:5173",                     # Local frontend (Vite dev)
-    "http://127.0.0.1:5173", 
-    "https://skarvi-frontend-cloud-mjmx18zns.vercel.app", 
-    'https://skarvi-frontend-cloud.vercel.app',
-    # "https://xn0tvwlm-8000.inc1.devtunnels.ms"
+    "http://localhost:5173",                               # Local dev (Vite)
+    "http://127.0.0.1:5173",                               # Local dev (loopback)
+    "https://skarvi-frontend-cloud.vercel.app",            # Production frontend (stable domain)
+    "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",  # Preview deploy (Vercel temporary URL)
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://skarvi-frontend-cloud.vercel.app",
-    "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",
-    # "https://xn0tvwlm-8000.inc1.devtunnels.ms"
-]
+
+# CORS_ALLOWED_ORIGINS = [
+#     "https://skarvi-frontend-cloud.vercel.app",  # Vercel frontend
+#     "http://localhost:5173",                     # Local frontend (Vite dev)
+#     "http://127.0.0.1:5173", 
+#     "https://skarvi-frontend-cloud-mjmx18zns.vercel.app", 
+#     'https://skarvi-frontend-cloud.vercel.app',
+#     # "https://xn0tvwlm-8000.inc1.devtunnels.ms"
+# ]
+
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://skarvi-frontend-cloud.vercel.app",
+#     "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",
+#     # "https://xn0tvwlm-8000.inc1.devtunnels.ms"
+# ]
 
 
 # Enable CSRF cookie
