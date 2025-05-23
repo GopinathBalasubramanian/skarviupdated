@@ -194,7 +194,7 @@ const AddNewTrade: React.FC = () => {
     try {
       let response = await makeRequest(accessToken);
       if (response.status === 401 && refreshToken) {
-        const refreshResponse = await fetch(`${API_URL}/api/token/refresh/`, {
+        const refreshResponse = await fetch(`${API_URL} api/token/refresh/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
