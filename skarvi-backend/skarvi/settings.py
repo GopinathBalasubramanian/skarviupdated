@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-insecure-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -142,11 +142,32 @@ REST_FRAMEWORK = {
 
 
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
-CSRF_TRUSTED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
+
+CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000', "https://skarvi-frontend-cloud.vercel.app"]
+# CSRF_TRUSTED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
+
+
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'xn0tvwlm-8000.inc1.devtunnels.ms',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://skarvi-frontend-cloud.vercel.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://xn0tvwlm-8000.inc1.devtunnels.ms",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://skarvi-frontend-cloud.vercel.app",
+    "http://localhost:3000",
+]
 
 # Enable CSRF cookie
 CSRF_COOKIE_HTTPONLY = False
