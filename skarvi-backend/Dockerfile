@@ -26,4 +26,5 @@ ENV PYTHONUNBUFFERED=1 \
 EXPOSE 8000
 
 # Run migrations and start Gunicorn
-CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:$PORT your_project.wsgi:application"]
+# Replace 'your_project' with your actual Django project name (the folder containing wsgi.py)
+CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:$PORT skarvi.wsgi:application"]
