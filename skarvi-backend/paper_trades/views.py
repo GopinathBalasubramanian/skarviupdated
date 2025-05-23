@@ -109,9 +109,6 @@ def get_numeric_update_value(data_dict, key, existing_value, type_cast=float):
 
 
 class HedgingAPIView(APIView):
-    """
-    API endpoint for creating, updating, partially updating, and deleting hedging trades.
-    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
@@ -125,8 +122,6 @@ class HedgingAPIView(APIView):
                 return Response({"error": "Trade not found"}, status=status.HTTP_404_NOT_FOUND)
 
         trades = HedgingSpr.objects.all()
-
-        # Fix: Removed trailing space from 'tran_ref_no' parameter name
         tran_ref_no = request.GET.get('tran_ref_no')
         transaction_type = request.GET.get('transaction_type')
 
@@ -138,7 +133,6 @@ class HedgingAPIView(APIView):
         serializer = HedgingSprSerializer(trades, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
     @swagger_auto_schema(
         request_body=HedgingSprSerializer,
         responses={201: HedgingSprSerializer},
@@ -147,7 +141,7 @@ class HedgingAPIView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             data = request.data
-            print("Received data for POST:", data) # For debugging
+            print("Received data for POST:", data)
 
             required_fields = ['fixed_price', 'pricing_period_from']
             missing_fields = [field for field in required_fields if field not in data or not data[field]]
@@ -158,28 +152,25 @@ class HedgingAPIView(APIView):
                 )
 
             with transaction.atomic():
-                # Get numeric values using the helper function for creation
                 quantity_mt = get_numeric_value(data, 'quantity_mt', default_value=0.0, type_cast=float)
                 fixed_price = get_numeric_value(data, 'fixed_price', default_value=0.0, type_cast=float)
-                # Corrected: Use 'quantitybbl' as the key and assume float for now
                 quantitybbl = get_numeric_value(data, 'quantitybbl', default_value=0.0, type_cast=float)
                 broker_charges = get_numeric_value(data, 'broker_charges', default_value=0.0, type_cast=float)
-                # Assuming due_date is an IntegerField and can be null in the model
                 due_date = get_numeric_value(data, 'due_date', default_value=None, type_cast=int)
 
-                # Fetch average price if pricing_quotation (from frontend's pricing_basis2) is provided
-                pricing_quotation_backend = data.get('pricing_basis2') # Assuming frontend 'pricing_basis2' maps to backend 'pricing_quotation'
+                pricing_quotation_backend = data.get('pricing_basis2')
                 avg_price = 0
                 if pricing_quotation_backend:
                     period_from = data.get('pricing_period_from')
                     period_to = data.get('pricing_period_to')
-                    if period_from and period_to: # Ensure both are present before querying
+                    if period_from and period_to:
                         avg_price = FwdPriceQuotesValues.objects.filter(
                             quote_name=pricing_quotation_backend,
                             period_from=period_from,
                             period_to=period_to
                         ).aggregate(Avg('value'))['value__avg'] or 0
 
+                traded_by_id = data.get('traded_by') or None
 
                 hedging = HedgingSpr.objects.create(
                     tran_ref_no=data.get('tran_ref_no'),
@@ -189,7 +180,7 @@ class HedgingAPIView(APIView):
                     pricing_period_to=data.get('pricing_period_to'),
                     traded_on=data.get('traded_on'),
                     quantity_mt=quantity_mt,
-                    quantitybbl=quantitybbl, # Corrected field assignment
+                    quantitybbl=quantitybbl,
                     broker_name=data.get('broker_name', ''),
                     counterparty=clean_value(data.get('counterparty', '')),
                     group_name=data.get('group_name', ''),
@@ -199,18 +190,16 @@ class HedgingAPIView(APIView):
                     charges_unit=data.get('charges_unit', ''),
                     email_id=data.get('email_id', ''),
                     due_date=due_date,
-                    # Handle other numeric fields similarly if they come from the UI
                     leg1_fix=get_numeric_value(data, 'leg1_fix', default_value=None, type_cast=float),
                     leg2_fix=get_numeric_value(data, 'leg2_fix', default_value=None, type_cast=float),
                     leg1_float=get_numeric_value(data, 'leg1_float', default_value=None, type_cast=float),
                     leg2_float=get_numeric_value(data, 'leg2_float', default_value=None, type_cast=float),
                     hedging_type=data.get('hedging_type', ''),
                     paper=clean_value(data.get('paper', '')),
-                    traded_by=request.user
+                    traded_by_id=traded_by_id
                 )
 
                 serializer = HedgingSprSerializer(hedging)
-
                 return Response({
                     "status": "success",
                     "message": "Trade created successfully",
@@ -218,12 +207,9 @@ class HedgingAPIView(APIView):
                 }, status=status.HTTP_201_CREATED)
 
         except ValueError as e:
-            # Catch ValueError specifically for invalid numeric conversions
             return Response({"error": f"Bad Request: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print(f"Exception in POST: {e}")
-            traceback_str = traceback.format_exc()
-            print(traceback_str) # Print full traceback for server-side debugging
+            traceback.print_exc()
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(
@@ -233,200 +219,166 @@ class HedgingAPIView(APIView):
         manual_parameters=[openapi.Parameter('id', openapi.IN_PATH, description="ID of the trade", type=openapi.TYPE_INTEGER)]
     )
     def put(self, request, id, *args, **kwargs):
-        print("Received data for PUT:", request.data) # For debugging
         try:
             data = request.data
-            try:
-                trade = HedgingSpr.objects.get(id=id)
-                print("Trade found:", trade)
-            except HedgingSpr.DoesNotExist:
-                return Response(
-                    {"error": "Trade not found."},
-                    status=status.HTTP_404_NOT_FOUND
-                )
+            trade = HedgingSpr.objects.get(id=id)
 
             with transaction.atomic():
                 trade.tran_ref_no = data.get('tran_ref_no', trade.tran_ref_no)
                 trade.transaction_type = data.get('transaction_type', trade.transaction_type)
-                # Use helper for updates, passing existing value
                 trade.fixed_price = get_numeric_update_value(data, 'fixed_price', trade.fixed_price, float)
                 trade.pricing_period_from = data.get('pricing_period_from', trade.pricing_period_from)
                 trade.pricing_period_to = data.get('pricing_period_to', trade.pricing_period_to)
                 trade.traded_on = data.get('traded_on', trade.traded_on)
                 trade.quantity_mt = get_numeric_update_value(data, 'quantity_mt', trade.quantity_mt, float)
-                # Corrected: Use 'quantitybbl' as the key and pass existing value
                 trade.quantitybbl = get_numeric_update_value(data, 'quantitybbl', trade.quantitybbl, float)
                 trade.broker_name = data.get('broker_name', trade.broker_name)
                 trade.counterparty = clean_value(data.get('counterparty', trade.counterparty))
                 trade.group_name = data.get('group_name', trade.group_name)
                 trade.pricing_basis1 = data.get('pricing_basis1', trade.pricing_basis1)
-                trade.pricing_basis2 = data.get('pricing_basis2', trade.pricing_basis2) # Ensure this field is handled if sent
+                trade.pricing_basis2 = data.get('pricing_basis2', trade.pricing_basis2)
                 trade.broker_charges = get_numeric_update_value(data, 'broker_charges', trade.broker_charges, float)
                 trade.charges_unit = data.get('charges_unit', trade.charges_unit)
                 trade.email_id = data.get('email_id', trade.email_id)
-                trade.due_date = get_numeric_update_value(data, 'due_date', trade.due_date, int) # Use int for due_date
-
-                # Handle other numeric fields similarly for updates
+                trade.due_date = get_numeric_update_value(data, 'due_date', trade.due_date, int)
                 trade.leg1_fix = get_numeric_update_value(data, 'leg1_fix', trade.leg1_fix, float)
                 trade.leg2_fix = get_numeric_update_value(data, 'leg2_fix', trade.leg2_fix, float)
                 trade.leg1_float = get_numeric_update_value(data, 'leg1_float', trade.leg1_float, float)
                 trade.leg2_float = get_numeric_update_value(data, 'leg2_float', trade.leg2_float, float)
-
                 trade.hedging_type = data.get('hedging_type', trade.hedging_type)
                 trade.paper = clean_value(data.get('paper', trade.paper))
-                trade.traded_by = request.user # Update 'traded_by' with current user on edit
+
+                traded_by = data.get('traded_by')
+                if traded_by:
+                    trade.traded_by_id = int(traded_by)
 
                 trade.save()
-
                 serializer = HedgingSprSerializer(trade)
+
                 return Response({
                     "status": "success",
                     "message": "Trade updated successfully",
                     "data": serializer.data
                 }, status=status.HTTP_200_OK)
 
-        except ValueError as e:
-            print(f"ValueError in PUT: {e}")
-            traceback_str = traceback.format_exc()
-            print(traceback_str)
-            return Response({"error": f"Bad Request: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+        except HedgingSpr.DoesNotExist:
+            return Response({"error": "Trade not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            print(f"Exception in PUT: {e}")
-            traceback_str = traceback.format_exc()
-            print(traceback_str)
+            traceback.print_exc()
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def patch(self, request, id, *args, **kwargs):
-        print("Received data for PATCH:", request.data) # For debugging
         try:
-            trade = self.get_trade(id=id) # This raises Http404 if not found
-            # If get_trade finds it, proceed with serializer
+            trade = self.get_trade(id=id)
             serializer = HedgingSprSerializer(trade, data=request.data, partial=True)
             if serializer.is_valid():
-                # Ensure 'traded_by' is updated if needed.
-                # If traded_by is a required field or not intended for patch, remove it.
-                # If it's a ForeignKey, DRF serializer usually handles it by id or object.
-                # If you want to force update traded_by on any patch:
-                serializer.save(traded_by=request.user)
+                serializer.save()  # Don't override traded_by from request.user unless you want to
                 return Response({
                     "status": "success",
                     "message": "Trade partially updated successfully",
                     "data": serializer.data
                 }, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
         except Http404:
             return Response({"error": "Trade not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            print(f"Exception in PATCH: {e}")
-            traceback_str = traceback.format_exc()
-            print(traceback_str)
+            traceback.print_exc()
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @swagger_auto_schema(
-        responses={204: "Trade deleted successfully", 404: "Trade Not Found"},
-        operation_description="Delete a hedging trade by ID.",
-        manual_parameters=[
-            openapi.Parameter('id', openapi.IN_PATH, description="ID of the trade", type=openapi.TYPE_INTEGER)
-        ]
-    )
     def get_trade(self, id):
-        """Helper to get a trade instance or raise Http404."""
         try:
             return HedgingSpr.objects.get(id=id)
         except HedgingSpr.DoesNotExist:
             raise Http404
 
-
     def delete(self, request, id, *args, **kwargs):
         try:
-            trade = self.get_trade(id) # This raises Http404 if not found
+            trade = self.get_trade(id)
             trade.delete()
             return Response({
                 "status": "success",
                 "message": "Trade deleted successfully"
             }, status=status.HTTP_204_NO_CONTENT)
-
         except Http404:
             return Response({"error": "Trade not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            traceback_str = traceback.format_exc()
-            print("Error while deleting trade:", traceback_str) # Log it to console/server
+            traceback.print_exc()
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-class HedgingCreateView(APIView):
-    """
-    Create a new hedging trade.
-    """
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
 
-    @swagger_auto_schema(
-        request_body=HedgingSprSerializer,
-        responses={201: HedgingSprSerializer},
-        operation_description="Create a new hedging trade."
-    )
-    def post(self, request, *args, **kwargs):
-        try:
-            data = request.data
-            required_fields = ['fixed_price', 'pricing_period_from']
-            missing_fields = [field for field in required_fields if not data.get(field)]
 
-            if missing_fields:
-                return Response(
-                    {"error": f"Missing required fields: {', '.join(missing_fields)}"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+# class HedgingCreateView(APIView):
+#     """
+#     Create a new hedging trade.
+#     """
+#     authentication_classes = [JWTAuthentication]
+#     permission_classes = [permissions.IsAuthenticated]
 
-            with transaction.atomic():
-                quantity_mt = float(data.get('quantity_mt', 0))
-                fixed_price = float(data.get('fixed_price', 0))
+#     @swagger_auto_schema(
+#         request_body=HedgingSprSerializer,
+#         responses={201: HedgingSprSerializer},
+#         operation_description="Create a new hedging trade."
+#     )
+#     def post(self, request, *args, **kwargs):
+#         try:
+#             data = request.data
+#             required_fields = ['fixed_price', 'pricing_period_from']
+#             missing_fields = [field for field in required_fields if not data.get(field)]
 
-                avg_price = 0
-                if data.get('pricing_quotation'):
-                    avg_price = FwdPriceQuotesValues.objects.filter(
-                        quote_name=data['pricing_quotation'],
-                        period_from=data['pricing_period_from'],
-                        period_to=data['pricing_period_to']
-                    ).aggregate(Avg('value'))['value__avg'] or 0
+#             if missing_fields:
+#                 return Response(
+#                     {"error": f"Missing required fields: {', '.join(missing_fields)}"},
+#                     status=status.HTTP_400_BAD_REQUEST
+#                 )
 
-                hedging = HedgingSpr.objects.create(
-                    tran_ref_no=data.get('tran_ref_no'),
-                    transaction_type=data.get('transaction_type'),
-                    fixed_price=fixed_price,
-                    pricing_basis_sp = data.get('pricing_basis_sp', ''),
-                    pricing_period_from=data.get('pricing_period_from'),
-                    pricing_period_to=data.get('pricing_period_to'),
-                    traded_on=data.get('traded_on'),
-                    quantity_mt=quantity_mt,
-                    broker_name=data.get('broker_name', ''),
-                    counterparty=clean_value(data.get('counterparty', '')),
-                    group_name=data.get('group_name', ''),
-                    pricing_basis2=data.get('pricing_quotation', ''),
-                    broker_charges=data.get('broker_charges', ''),
-                    charges_unit=data.get('charges_unit', ''),
-                    email_id=data.get('email_id', ''),
-                    due_date=data.get('due_date', ''),
-                    leg1_fix=data.get('leg1_fix'),
-                    leg2_fix=data.get('leg2_fix'),
-                    leg1_float=data.get('leg1_float'),
-                    leg2_float=data.get('leg2_float'),
-                    hedging_type=data.get('hedging_type', ''),
-                    paper=clean_value(data.get('paper', '')),
-                    traded_by=request.user
-                )
+#             with transaction.atomic():
+#                 quantity_mt = float(data.get('quantity_mt', 0))
+#                 fixed_price = float(data.get('fixed_price', 0))
 
-                serializer = HedgingSprSerializer(hedging)
-                return Response({
-                    "status": "success",
-                    "message": "Trade created successfully",
-                    "data": serializer.data
-                }, status=status.HTTP_201_CREATED)
+#                 avg_price = 0
+#                 if data.get('pricing_quotation'):
+#                     avg_price = FwdPriceQuotesValues.objects.filter(
+#                         quote_name=data['pricing_quotation'],
+#                         period_from=data['pricing_period_from'],
+#                         period_to=data['pricing_period_to']
+#                     ).aggregate(Avg('value'))['value__avg'] or 0
 
-        except ValueError as e:
-            return Response({"error": f"Invalid numeric value: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#                 hedging = HedgingSpr.objects.create(
+#                     tran_ref_no=data.get('tran_ref_no'),
+#                     transaction_type=data.get('transaction_type'),
+#                     fixed_price=fixed_price,
+#                     pricing_basis_sp = data.get('pricing_basis_sp', ''),
+#                     pricing_period_from=data.get('pricing_period_from'),
+#                     pricing_period_to=data.get('pricing_period_to'),
+#                     traded_on=data.get('traded_on'),
+#                     quantity_mt=quantity_mt,
+#                     broker_name=data.get('broker_name', ''),
+#                     counterparty=clean_value(data.get('counterparty', '')),
+#                     group_name=data.get('group_name', ''),
+#                     pricing_basis2=data.get('pricing_quotation', ''),
+#                     broker_charges=data.get('broker_charges', ''),
+#                     charges_unit=data.get('charges_unit', ''),
+#                     email_id=data.get('email_id', ''),
+#                     due_date=data.get('due_date', ''),
+#                     leg1_fix=data.get('leg1_fix'),
+#                     leg2_fix=data.get('leg2_fix'),
+#                     leg1_float=data.get('leg1_float'),
+#                     leg2_float=data.get('leg2_float'),
+#                     hedging_type=data.get('hedging_type', ''),
+#                     paper=clean_value(data.get('paper', '')),
+#                     traded_by_id=data.get('traded_by'),
+#                 )
+
+#                 serializer = HedgingSprSerializer(hedging)
+#                 return Response({
+#                     "status": "success",
+#                     "message": "Trade created successfully",
+#                     "data": serializer.data
+#                 }, status=status.HTTP_201_CREATED)
+
+#         except ValueError as e:
+#             return Response({"error": f"Invalid numeric value: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class HedgingDuplicateView(APIView):
@@ -577,7 +529,7 @@ class HedgingBulkUploadView(APIView):
                             quantity=quantity,
                             quantity_mt=row.get("Total Quantity") or 0,
                             paper=row.get("Option", ""),
-                            traded_by=request.user,
+                            traded_by_id=row.get("Trader", ""),
                             traded_on = parse_date(row.get("Trade Date", "")),
                             email_id=request.user.email,
                             due_date=None,
