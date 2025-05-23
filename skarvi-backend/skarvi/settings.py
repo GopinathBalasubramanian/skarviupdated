@@ -155,7 +155,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'xn0tvwlm-8000.inc1.devtunnels.ms',
-    'https://skarvi-frontend-cloud.vercel.app',
+    'skarvi-frontend-cloud.vercel.app',
     'skarviupdated-production-b1de.up.railway.app',
 ]
 
