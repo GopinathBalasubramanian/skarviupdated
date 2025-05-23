@@ -14,7 +14,7 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const response = await loginUser(username, password);
-
+      const data = response.data;
       console.log(response.data);
 
       // Save tokens in localStorage
