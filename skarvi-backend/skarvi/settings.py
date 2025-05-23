@@ -165,13 +165,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173", 
     "https://skarvi-frontend-cloud-mjmx18zns.vercel.app", 
     'https://skarvi-frontend-cloud.vercel.app',
-    "https://xn0tvwlm-8000.inc1.devtunnels.ms"
+    # "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://skarvi-frontend-cloud.vercel.app",
     "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",
-    "https://xn0tvwlm-8000.inc1.devtunnels.ms"
+    # "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 ]
 
 
