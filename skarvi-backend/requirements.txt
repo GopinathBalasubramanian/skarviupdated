@@ -25,3 +25,4 @@ timedelta==2020.12.3
 typing_extensions==4.13.2
 tzdata==2025.2
 uritemplate==4.1.1
+gunicorn==22.0.0
