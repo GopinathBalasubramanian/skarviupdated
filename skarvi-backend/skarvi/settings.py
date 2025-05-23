@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-insecure-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -144,7 +144,7 @@ REST_FRAMEWORK = {
 
 
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = False
 # CORS_ALLOW_ALL_ORIGINS = True
 
 # CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000', "https://skarvi-frontend-cloud.vercel.app"]
@@ -155,6 +155,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'xn0tvwlm-8000.inc1.devtunnels.ms',
+    'skarviupdated-production-b1de.up.railway.app',
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -171,10 +172,10 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # Enable CSRF cookie
-CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_HTTPONLY = False
+# CSRF_COOKIE_SAMESITE = 'Lax'
+# SESSION_COOKIE_SAMESITE = 'Lax'
+# SESSION_COOKIE_SECURE = False
 
 
 # Password validation
