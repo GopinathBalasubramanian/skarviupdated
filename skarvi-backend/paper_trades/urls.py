@@ -14,4 +14,3 @@ urlpatterns = [
     path('upload-trades/', views.HedgingBulkUploadView.as_view(), name='hedging-upload'),
     # path('api/hedging-trades/', views.HedgingAPIView.as_view(), name='hedging-trades'),
 ]
-# ?tran_ref_no=4027025&transaction_type=Bought
