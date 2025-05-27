@@ -17,6 +17,7 @@ import Development from "./components/Development";
 import AddNewTrade from "./components/Papertrades_AddNewTrade";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./components/pages/Home";
+import EditTrade from "../src/components/EditTrade"; 
 
 function App() {
   const location = useLocation();
@@ -54,6 +55,7 @@ function App() {
         <Route path="/admintools" element={<ProtectedRoute><AdminTools /></ProtectedRoute>} />
         <Route path="/development" element={<ProtectedRoute><Development /></ProtectedRoute>} />
         <Route path="/add-new-trade" element={<AddNewTrade />} />
+        <Route path="/edit-trade" element={<EditTrade />} />
       </Routes>
     </>
   );

@@ -7,7 +7,71 @@
   margin-top: 25px; /* Add margin to move the title down */
   margin-bottom: 20px; /* Added margin */
 }
+/* Modal Overlay and Modal Box Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
 
+.upload-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
+}
+
+.upload-header {
+  margin-top: 0;
+  font-size: 24px;
+  color: #1F325C;
+  font-weight: bold;
+}
+
+.modal-content {
+  background-color: #f7f7f7;
+  padding: 30px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.modal-close-icon {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+}
+
+.upload-box label {
+  font-weight: bold;
+  display: inline;
+  margin-bottom: 15px;
+}
+
+.upload-submit-btn {
+  background-color: #1F325C;
+  color: white;
+  padding: 12px 30px ;
+  align-content: center;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.upload-submit-btn:hover {
+  background-color: #162747;
+}
 
 /* Card Styling */
 /* Card Styling */

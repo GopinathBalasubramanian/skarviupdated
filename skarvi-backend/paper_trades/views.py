@@ -170,7 +170,7 @@ class HedgingAPIView(APIView):
                             period_to=period_to
                         ).aggregate(Avg('value'))['value__avg'] or 0
 
-                traded_by_id = data.get('traded_by') or None
+                traded_by = data.get('traded_by') or None
 
                 hedging = HedgingSpr.objects.create(
                     tran_ref_no=data.get('tran_ref_no'),
@@ -196,7 +196,7 @@ class HedgingAPIView(APIView):
                     leg2_float=get_numeric_value(data, 'leg2_float', default_value=None, type_cast=float),
                     hedging_type=data.get('hedging_type', ''),
                     paper=clean_value(data.get('paper', '')),
-                    traded_by_id=traded_by_id
+                    traded_by=traded_by
                 )
 
                 serializer = HedgingSprSerializer(hedging)
@@ -250,7 +250,7 @@ class HedgingAPIView(APIView):
 
                 traded_by = data.get('traded_by')
                 if traded_by:
-                    trade.traded_by_id = int(traded_by)
+                    trade.traded_by = int(traded_by)
 
                 trade.save()
                 serializer = HedgingSprSerializer(trade)
@@ -365,7 +365,7 @@ class HedgingAPIView(APIView):
 #                     leg2_float=data.get('leg2_float'),
 #                     hedging_type=data.get('hedging_type', ''),
 #                     paper=clean_value(data.get('paper', '')),
-#                     traded_by_id=data.get('traded_by'),
+#                     traded_by=data.get('traded_by'),
 #                 )
 
 #                 serializer = HedgingSprSerializer(hedging)
@@ -529,7 +529,7 @@ class HedgingBulkUploadView(APIView):
                             quantity=quantity,
                             quantity_mt=row.get("Total Quantity") or 0,
                             paper=row.get("Option", ""),
-                            traded_by_id=row.get("Trader", ""),
+                            traded_by=row.get("Trader", ""),
                             traded_on = parse_date(row.get("Trade Date", "")),
                             email_id=request.user.email,
                             due_date=None,

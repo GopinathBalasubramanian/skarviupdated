@@ -69,7 +69,7 @@ const CustomNavbar: React.FC = () => {
         </Navbar.Toggle>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto" style={{ gap: "10px", width: "100%", justifyContent: "flex-end", paddingTop: "1px", paddingLeft: "20px", backgroundColor: "transparent" }}>
-            <Nav.Link as={Link} to="/" onClick={() => setALink("db")} style={{ backgroundColor: ALink === "db" ? "white" : "transparent", color: ALink === "db" ? "black" : "white", borderRadius: ALink === "db" ? "5px" : "0px" }}>Dashboard</Nav.Link>
+            <Nav.Link as={Link} to="/dashboard" onClick={() => setALink("db")} style={{ backgroundColor: ALink === "db" ? "white" : "transparent", color: ALink === "db" ? "black" : "white", borderRadius: ALink === "db" ? "5px" : "0px", height: "40px", marginTop:"0px"}}>Dashboard</Nav.Link>
 
             <NavDropdown
               title="Trades"
