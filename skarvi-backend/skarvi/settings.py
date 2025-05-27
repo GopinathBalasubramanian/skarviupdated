@@ -161,7 +161,7 @@ CORS_ALLOW_CREDENTIALS = False
 ALLOWED_HOSTS = [
     'localhost',
     # '127.0.0.1',
-    'localhost:5173'
+    'localhost:5173',
     'skarviupdated-production-b1de.up.railway.app',
 ]
 
