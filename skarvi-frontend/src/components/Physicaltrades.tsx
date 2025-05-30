@@ -24,7 +24,7 @@ const PhysicalTrades: React.FC = () => {
               <FontAwesomeIcon icon={faCirclePlus} className="physical-trades-icon" />
               <h3 className="physical-trades-card-title">Add Trade</h3>
               <p className="physical-trades-card-text">Create a new physical trade entry</p>
-              <Button className="physical-trades-launch-button" onClick={() => navigate("/development")}>
+              <Button className="physical-trades-launch-button" onClick={() => navigate("/add-physical-trade")}>
                 Launch
               </Button>
             </Card.Body>

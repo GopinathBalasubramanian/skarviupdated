@@ -66,8 +66,8 @@ class HedgingSpr(models.Model):
     approved_on = models.DateField(null=True, blank=True)
     stop_loss_limit = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
     delete_status = models.BooleanField(default=False)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    # date_created = models.DateTimeField(auto_now_add=True)
+    # date_modified = models.DateTimeField(auto_now=True)
     email_id = models.EmailField(max_length=254, blank=True, null=True)
     due_date = models.IntegerField(blank=True, null=True)
 

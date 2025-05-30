@@ -158,21 +158,36 @@ class HedgingAPIView(APIView):
                 broker_charges = get_numeric_value(data, 'broker_charges', default_value=0.0, type_cast=float)
                 due_date = get_numeric_value(data, 'due_date', default_value=None, type_cast=int)
 
-                pricing_quotation_backend = data.get('pricing_basis2')
-                avg_price = 0
-                if pricing_quotation_backend:
-                    period_from = data.get('pricing_period_from')
-                    period_to = data.get('pricing_period_to')
-                    if period_from and period_to:
-                        avg_price = FwdPriceQuotesValues.objects.filter(
-                            quote_name=pricing_quotation_backend,
-                            period_from=period_from,
-                            period_to=period_to
-                        ).aggregate(Avg('value'))['value__avg'] or 0
+                pricing_quotation_backend = data.get('hedging_type')
+                type = data.get('transaction_type')
+                quantity = float(data.get('quantitybbl') or 0)
+                fixed_price = float(data.get('fixed_price') or 0)
+                pricing_basis2 = data.get('pricing_basis2')
+                period_from = data.get('pricing_period_from')
+                period_to = data.get('pricing_period_to')
 
+                floating_price = 0
+                if pricing_basis2 and period_from and period_to:
+                    floating_price = FwdPriceQuotesValues.objects.filter(
+                        quote_name=pricing_basis2,
+                        period_from=period_from,
+                        period_to=period_to
+                    ).aggregate(Avg('value'))['value__avg'] or 0
+
+                pricing_basis_leg1 = 0
+                if  HedgingSpr.HEDGE_TYPES== 'FlatPrice':
+                    if type == 'Bought':
+                        pricing_basis_leg1 = (floating_price - fixed_price) * quantity
+                    elif type == 'Sold':
+                        pricing_basis_leg1 = (fixed_price - floating_price) * quantity
+
+                settlement_value = pricing_basis_leg1
                 traded_by = data.get('traded_by') or None
 
                 hedging = HedgingSpr.objects.create(
+                    floating_price=floating_price,
+                    leg1_float=pricing_basis_leg1,
+                    settlement_value=settlement_value,  
                     tran_ref_no=data.get('tran_ref_no'),
                     transaction_type=data.get('transaction_type'),
                     fixed_price=fixed_price,
@@ -191,12 +206,10 @@ class HedgingAPIView(APIView):
                     email_id=data.get('email_id', ''),
                     due_date=due_date,
                     leg1_fix=get_numeric_value(data, 'leg1_fix', default_value=None, type_cast=float),
-                    leg2_fix=get_numeric_value(data, 'leg2_fix', default_value=None, type_cast=float),
-                    leg1_float=get_numeric_value(data, 'leg1_float', default_value=None, type_cast=float),
-                    leg2_float=get_numeric_value(data, 'leg2_float', default_value=None, type_cast=float),
                     hedging_type=data.get('hedging_type', ''),
                     paper=clean_value(data.get('paper', '')),
-                    traded_by=traded_by
+                    traded_by= traded_by if traded_by else request.user.id,
+
                 )
 
                 serializer = HedgingSprSerializer(hedging)
@@ -306,81 +319,6 @@ class HedgingAPIView(APIView):
             return Response({"error": f"Internal Server Error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# class HedgingCreateView(APIView):
-#     """
-#     Create a new hedging trade.
-#     """
-#     authentication_classes = [JWTAuthentication]
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     @swagger_auto_schema(
-#         request_body=HedgingSprSerializer,
-#         responses={201: HedgingSprSerializer},
-#         operation_description="Create a new hedging trade."
-#     )
-#     def post(self, request, *args, **kwargs):
-#         try:
-#             data = request.data
-#             required_fields = ['fixed_price', 'pricing_period_from']
-#             missing_fields = [field for field in required_fields if not data.get(field)]
-
-#             if missing_fields:
-#                 return Response(
-#                     {"error": f"Missing required fields: {', '.join(missing_fields)}"},
-#                     status=status.HTTP_400_BAD_REQUEST
-#                 )
-
-#             with transaction.atomic():
-#                 quantity_mt = float(data.get('quantity_mt', 0))
-#                 fixed_price = float(data.get('fixed_price', 0))
-
-#                 avg_price = 0
-#                 if data.get('pricing_quotation'):
-#                     avg_price = FwdPriceQuotesValues.objects.filter(
-#                         quote_name=data['pricing_quotation'],
-#                         period_from=data['pricing_period_from'],
-#                         period_to=data['pricing_period_to']
-#                     ).aggregate(Avg('value'))['value__avg'] or 0
-
-#                 hedging = HedgingSpr.objects.create(
-#                     tran_ref_no=data.get('tran_ref_no'),
-#                     transaction_type=data.get('transaction_type'),
-#                     fixed_price=fixed_price,
-#                     pricing_basis_sp = data.get('pricing_basis_sp', ''),
-#                     pricing_period_from=data.get('pricing_period_from'),
-#                     pricing_period_to=data.get('pricing_period_to'),
-#                     traded_on=data.get('traded_on'),
-#                     quantity_mt=quantity_mt,
-#                     broker_name=data.get('broker_name', ''),
-#                     counterparty=clean_value(data.get('counterparty', '')),
-#                     group_name=data.get('group_name', ''),
-#                     pricing_basis2=data.get('pricing_quotation', ''),
-#                     broker_charges=data.get('broker_charges', ''),
-#                     charges_unit=data.get('charges_unit', ''),
-#                     email_id=data.get('email_id', ''),
-#                     due_date=data.get('due_date', ''),
-#                     leg1_fix=data.get('leg1_fix'),
-#                     leg2_fix=data.get('leg2_fix'),
-#                     leg1_float=data.get('leg1_float'),
-#                     leg2_float=data.get('leg2_float'),
-#                     hedging_type=data.get('hedging_type', ''),
-#                     paper=clean_value(data.get('paper', '')),
-#                     traded_by=data.get('traded_by'),
-#                 )
-
-#                 serializer = HedgingSprSerializer(hedging)
-#                 return Response({
-#                     "status": "success",
-#                     "message": "Trade created successfully",
-#                     "data": serializer.data
-#                 }, status=status.HTTP_201_CREATED)
-
-#         except ValueError as e:
-#             return Response({"error": f"Invalid numeric value: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-#         except Exception as e:
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 class HedgingDuplicateView(APIView):
     """
     Duplicate a hedging trade using a combined string:
@@ -422,9 +360,9 @@ class HedgingDuplicateView(APIView):
                 new_trade = HedgingSpr.objects.create(
                     **{field.name: getattr(trade, field.name)
                        for field in HedgingSpr._meta.fields
-                       if field.name not in ['id', 'date_created', 'date_modified']},
-                    date_created=datetime.datetime.now(),
-                    date_modified=datetime.datetime.now()
+                       if field.name not in ['id']},
+                    # date_created=datetime.datetime.now(),
+                    # date_modified=datetime.datetime.now()
                 )
 
             return Response({

@@ -8,6 +8,7 @@ import OperationsAndLogistics from "../OperationsAndLogistics";
 import InventoryManagement from "../InventoryManagement";
 import EndOfDay from "../EndOfDay";
 import AdminTools from "../AdminTools";
+import AddPhysicaltrade from "../Physicaltrade_Addbought";
 // import Development from "../components/Development";
 import AddNewTrade from "../Papertrades_AddNewTrade";
 const Home = () => {
@@ -25,6 +26,8 @@ const Home = () => {
 <AdminTools/>
 {/* <Development/> */}
 <AddNewTrade/>
+<AddPhysicaltrade />
+
 </>
     );
 };

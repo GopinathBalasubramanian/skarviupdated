@@ -13,9 +13,30 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+
+    // --- JWT expiry check ---
+    if (token) {
+      try {
+        const [, payload] = token.split(".");
+        const decoded = JSON.parse(atob(payload));
+        if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+          localStorage.removeItem("access_token");
+          setTokenAvailable(false);
+          setIsChecking(false);
+          return;
+        }
+      } catch (e) {
+        // If token is malformed, treat as invalid
+        localStorage.removeItem("access_token");
+        setTokenAvailable(false);
+        setIsChecking(false);
+        return;
+      }
+    }
+
     setTokenAvailable(!!token);
     setIsChecking(false);
-  }, []);
+  }, [location]);
 
   if (isChecking) {
     return <div>Loading...</div>; // You can replace this with a spinner

@@ -60,11 +60,12 @@ INSTALLED_APPS = [
     'drf_yasg', 
 ]
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=50),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'UPDATE_LAST_LOGIN': True,  
 }
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -160,7 +161,7 @@ CORS_ALLOW_CREDENTIALS = False
 # ]
 ALLOWED_HOSTS = [
     'localhost',
-    # '127.0.0.1',
+    '127.0.0.1',
     'localhost:5173',
     'skarviupdated-production-b1de.up.railway.app',
 ]

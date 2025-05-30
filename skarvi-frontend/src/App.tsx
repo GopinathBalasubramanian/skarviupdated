@@ -1,4 +1,3 @@
-// App.tsx
 import React, { useEffect, useState } from "react";
 import LoginForm from "./components/pages/LoginForm";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -17,29 +16,30 @@ import Development from "./components/Development";
 import AddNewTrade from "./components/Papertrades_AddNewTrade";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./components/pages/Home";
-import EditTrade from "../src/components/EditTrade"; 
+import EditTrade from "./components/EditTrade"; 
+import NavigatorPage from "./components/NavigatorPage";
+import AddPhysicaltrade from "./components/Physicaltrade_Addbought";
+
 
 function App() {
   const location = useLocation();
   const [isTokenReady, setIsTokenReady] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      // Optionally, validate token expiry here
-      setIsTokenReady(true);
-    } else {
-      setIsTokenReady(true); // Still allow login route
-    }
+    // You can add token validation logic here if needed
+    setIsTokenReady(true);
   }, []);
 
   if (!isTokenReady) {
-    return <div>Loading...</div>; // Show spinner or loader
+    return <div>Loading...</div>;
   }
+
+  // Hide navbar on login and navigator pages
+  const hideNavbar = location.pathname === "/" || location.pathname === "/navigator";
 
   return (
     <>
-      {location.pathname !== "/" && <CustomNavbar />}
+      {!hideNavbar && <CustomNavbar />}
 
       <Routes>
         <Route path="/" element={<LoginForm />} />
@@ -56,6 +56,9 @@ function App() {
         <Route path="/development" element={<ProtectedRoute><Development /></ProtectedRoute>} />
         <Route path="/add-new-trade" element={<AddNewTrade />} />
         <Route path="/edit-trade" element={<EditTrade />} />
+        <Route path="/navigator" element={<NavigatorPage />} />
+        <Route path="/add-physical-trade" element={<ProtectedRoute><AddPhysicaltrade /></ProtectedRoute>}/>
+
       </Routes>
     </>
   );
