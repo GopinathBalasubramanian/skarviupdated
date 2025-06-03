@@ -36,16 +36,16 @@ const PhysicalTrades: React.FC = () => {
           <Card className="physical-trades-card">
             <Card.Body>
               <FontAwesomeIcon icon={faPenToSquare} className="physical-trades-icon" />
-              <h3 className="physical-trades-card-title">Edit Trade (Dirty)</h3>
+              <h3 className="physical-trades-card-title">Edit Trade</h3>
               <p className="physical-trades-card-text">Modify existing trade details</p>
-              <Button className="physical-trades-launch-button" onClick={() => navigate("/development")}>
+              <Button className="physical-trades-launch-button" onClick={() => navigate("/edit-physical-trade")}>
                 Launch
               </Button>
             </Card.Body>
           </Card>
         </Col>
         {/* Edit Trade (Odysseas) */}
-        <Col xs={12} sm={6} md={4} lg={4}>
+        {/* <Col xs={12} sm={6} md={4} lg={4}>
           <Card className="physical-trades-card">
             <Card.Body>
               <FontAwesomeIcon icon={faPenToSquare} className="physical-trades-icon" />
@@ -56,7 +56,7 @@ const PhysicalTrades: React.FC = () => {
               </Button>
             </Card.Body>
           </Card>
-        </Col>
+        </Col> */}
       </Row>
     </Container>
   );

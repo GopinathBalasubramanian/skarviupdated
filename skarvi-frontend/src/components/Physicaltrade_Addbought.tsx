@@ -1,7 +1,8 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
-
-const API_BASE_URL = "http://localhost:8000"; // Change if your backend runs elsewhere
+import { API_URL } from "../utils/utils";
+import { useNavigate } from "react-router-dom";
+const API_BASE_URL = API_URL
 
 const TABS = [
   "Basic Details",
@@ -112,6 +113,7 @@ const SULFUR_FIELDS: Field[] = [
 ];
 
 const TabbedTransactionForm: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState<string>(TABS[0]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -169,8 +171,15 @@ const TabbedTransactionForm: React.FC = () => {
   return (
     <div style={{ padding: "32px 16px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto 8px auto", fontSize: "16px", fontWeight: "bold", color: "#333" }}>
-        Trades &gt; Physical Trade &gt; Add Bought Trade
-      </div>
+  Trades &gt;{" "}
+  <span
+    style={{ color: "#1F325C", cursor: "pointer" }}
+    onClick={() => navigate("/physical-trades")}
+  >
+    Physical Trade
+  </span>
+  &gt; Add Bought Trade
+</div>
 
       <div style={{
         fontFamily: "Arial, sans-serif",

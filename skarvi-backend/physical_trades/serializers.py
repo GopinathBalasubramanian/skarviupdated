@@ -10,3 +10,8 @@ class SellerTransactionSprSerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerTransactionSpr
         fields = '__all__'
+
+class BuyerTransactionSprSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BuyerTransactionSpr
+        fields = '__all__'

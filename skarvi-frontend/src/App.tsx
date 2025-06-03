@@ -19,6 +19,8 @@ import Home from "./components/pages/Home";
 import EditTrade from "./components/EditTrade"; 
 import NavigatorPage from "./components/NavigatorPage";
 import AddPhysicaltrade from "./components/Physicaltrade_Addbought";
+import EditPhysicaltrade from "./components/Physicaltrade_EditTrade";
+import Physicaladdsoldtrade from "./components/Physicaladdsoldtrade"
 
 
 function App() {
@@ -58,7 +60,12 @@ function App() {
         <Route path="/edit-trade" element={<EditTrade />} />
         <Route path="/navigator" element={<NavigatorPage />} />
         <Route path="/add-physical-trade" element={<ProtectedRoute><AddPhysicaltrade /></ProtectedRoute>}/>
+        <Route path="/edit-physical-trade" element={<EditPhysicaltrade />} />
+        <Route path="/add-physical-trade" element={< AddPhysicaltrade/>} />
+        <Route path="/physical-add-sold-trade" element={< Physicaladdsoldtrade/>} />
 
+
+        
       </Routes>
     </>
   );

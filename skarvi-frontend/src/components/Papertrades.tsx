@@ -153,7 +153,7 @@ const Papertrades: React.FC = () => {
                 Add New Trades and Create a Paper Entry
               </h3>
               <p className="card-text">
-                Create a new trade entry for physical trades.
+                Create a new trade entry for Paper trades.
               </p>
               <Button
                 className="launch-button"

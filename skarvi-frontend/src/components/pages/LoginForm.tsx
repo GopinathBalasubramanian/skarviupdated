@@ -23,6 +23,7 @@ const LoginForm = () => {
       const response = await loginUser(username, password);
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
+      console.log("access token:", response.data.access);
       setTokens(response.data);
       setError("");
       navigate('/navigator');
