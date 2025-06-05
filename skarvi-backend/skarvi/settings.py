@@ -148,8 +148,8 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = False
 # CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000', "https://skarvi-frontend-cloud.vercel.app","https://skarvi-frontend-cloud-mjmx18zns.vercel.app"]
-# CSRF_TRUSTED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
+CORS_ALLOWED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000', "https://skarvi-frontend-cloud.vercel.app","https://skarvi-frontend-cloud-mjmx18zns.vercel.app"]
+CSRF_TRUSTED_ORIGINS = [os.getenv('API_URL')] if os.getenv('API_URL') else ['http://localhost:8000']
 
 
 # ALLOWED_HOSTS = [
@@ -166,12 +166,12 @@ ALLOWED_HOSTS = [
     'skarviupdated-production-b1de.up.railway.app',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",                               # Local dev (Vite)
-    "http://127.0.0.1:5173",                               # Local dev (loopback)
-    "https://skarvi-frontend-cloud.vercel.app",            # Production frontend (stable domain)
-    "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",  # Preview deploy (Vercel temporary URL)
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",                               # Local dev (Vite)
+#     "http://127.0.0.1:5173",                               # Local dev (loopback)
+#     "https://skarvi-frontend-cloud.vercel.app",            # Production frontend (stable domain)
+#     "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",  # Preview deploy (Vercel temporary URL)
+# ]
 
 
 # CORS_ALLOWED_ORIGINS = [
