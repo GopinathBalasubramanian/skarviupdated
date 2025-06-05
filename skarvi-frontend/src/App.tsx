@@ -63,6 +63,8 @@ function App() {
         <Route path="/edit-physical-trade" element={<EditPhysicaltrade />} />
         <Route path="/add-physical-trade" element={< AddPhysicaltrade/>} />
         <Route path="/physical-add-sold-trade" element={< Physicaladdsoldtrade/>} />
+        <Route path="/edit-physical-trade/save-trade" element={<AddPhysicaltrade />} />
+
 
 
         
