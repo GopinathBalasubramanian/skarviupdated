@@ -15,3 +15,13 @@ class BuyerTransactionSprSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerTransactionSpr
         fields = '__all__'
+
+class BuyerTransactionSprSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BuyerTransactionSpr
+        fields = '__all__'
+        
+class InterimTransactionSprSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InterimTransactionSPR
+        fields = '__all__'

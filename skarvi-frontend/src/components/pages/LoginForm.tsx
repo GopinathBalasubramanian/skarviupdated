@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { loginUser } from "./login";
 import { useNavigate } from "react-router-dom";
+import illustration from '../../assets/skarvi_logo.png'; 
 
 const companies = [
   "ELIN OIL HELLENIC PETROLEUM S",
@@ -67,7 +68,8 @@ const LoginForm = () => {
           }}
         >
           <img
-            src="/illustration.svg" // <-- replace with your illustration path
+            src={illustration}
+
             alt="illustration"
             style={{ width: "80%", maxWidth: 400, minWidth: 250 }}
           />

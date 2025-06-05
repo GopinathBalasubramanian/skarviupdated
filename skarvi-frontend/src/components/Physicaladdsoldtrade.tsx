@@ -24,7 +24,7 @@ interface Field {
 const FIELD_GROUPS: Record<string, Field[]> = {
   "Basic Details": [
     { label: "Trans. Reference", name: "tran_ref_no", required: true },
-    { label: "Sale Contract ID", name: "sale_contract_id", required: true }, // changed here
+    { label: "Purchase Contract ID", name: "purchase_contract_id", required: true },
     { label: "Seller", name: "seller_name", required: true },
     { label: "Trader", name: "trader_name", required: true },
     { label: "Deal Date", name: "deal_date", type: "date", required: true },
@@ -121,7 +121,7 @@ const TabbedTransactionForm: React.FC = () => {
     setLoading(true);
     const token = localStorage.getItem("access_token");
     await axios.post(
-      `${API_URL}/api/physical-trades/sold/`,
+      `${API_URL}/api/physical-trades/sold`,
       formData,
       {
         headers: {

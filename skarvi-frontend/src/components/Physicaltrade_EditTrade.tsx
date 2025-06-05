@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+
+const API_URL = "http://127.0.0.1:8000/physical_trades/api/save-trade"; // Adjust if needed
 
 const PhysicalTradesEditTrade = () => {
   const [trades, setTrades] = useState<any[]>([]);
@@ -7,31 +10,35 @@ const PhysicalTradesEditTrade = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTrade, setSelectedTrade] = useState<any>(null);
 
-  // Static data to mimic API response
+  const navigate = useNavigate();
+
+  // Fetch all trades from backend
   useEffect(() => {
-    const staticData = [
-      {
-        transaction_ref: 'TXN001',
-        product: 'Crude Oil',
-        seller: 'Company A',
-        buyer: 'Company B',
-        laycan: '2025-06-10',
-        price: '$60',
-        quantity: '1000 BBL',
-      },
-      {
-        transaction_ref: 'TXN002',
-        product: 'Diesel',
-        seller: 'Company C',
-        buyer: 'Company D',
-        laycan: '2025-06-15',
-        price: '$75',
-        quantity: '2000 BBL',
-      },
-    ];
-    setTrades(staticData);
+    const fetchTrades = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const res = await axios.get(API_URL, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTrades(res.data);
+      } catch (err) {
+        setTrades([]);
+        alert("Failed to fetch trades");
+      }
+    };
+    fetchTrades();
   }, []);
-const navigate = useNavigate();
+
+  // Get all unique keys from all trades for dynamic columns
+  const allKeys = Array.from(
+    trades.reduce((acc, trade) => {
+      Object.keys(trade).forEach((key) => acc.add(key));
+      return acc;
+    }, new Set<string>())
+  );
+
   const buttonStyle: React.CSSProperties = {
     backgroundColor: '#1F325C',
     color: 'white',
@@ -48,12 +55,14 @@ const navigate = useNavigate();
     padding: '6px 8px',
     fontWeight: 'bold',
     backgroundColor: '#f3f4f6',
+    whiteSpace: 'nowrap',
   };
 
   const tdStyle: React.CSSProperties = {
     border: '1px solid #ccc',
     padding: '6px 8px',
     textAlign: 'center',
+    whiteSpace: 'nowrap',
   };
 
   const handleDeleteClick = (trade: any) => {
@@ -61,9 +70,21 @@ const navigate = useNavigate();
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (selectedTrade) {
-      setTrades(trades.filter(t => t.transaction_ref !== selectedTrade.transaction_ref));
+      try {
+        const token = localStorage.getItem("access_token");
+        await axios.delete(API_URL, {
+          headers: { Authorization: `Bearer ${token}` },
+          data: {
+            tran_ref_no: selectedTrade.tran_ref_no,
+            purchase_contract_id: selectedTrade.purchase_contract_id,
+          },
+        });
+        setTrades(trades.filter(t => t.tran_ref_no !== selectedTrade.tran_ref_no || t.purchase_contract_id !== selectedTrade.purchase_contract_id));
+      } catch (err) {
+        alert("Failed to delete trade");
+      }
     }
     setIsDeleteModalOpen(false);
     setSelectedTrade(null);
@@ -78,51 +99,45 @@ const navigate = useNavigate();
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }}>
         <button style={buttonStyle} onClick={() => navigate('/add-physical-trade')}>
           Add Bought Cargoes
-        </button>        
+        </button>
         <button style={buttonStyle} onClick={() => navigate('/physical-add-sold-trade')}>Add Sold Cargoes</button>
         <button style={buttonStyle}>Send Mail</button>
         <button style={buttonStyle} onClick={() => setIsCopyModalOpen(true)}>Copy Transaction</button>
       </div>
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-        <thead>
-          <tr>
-            <th style={thStyle}>Select</th>
-            <th style={thStyle}>Transaction Ref</th>
-            <th style={thStyle}>Product</th>
-            <th style={thStyle}>Seller</th>
-            <th style={thStyle}>Buyer</th>
-            <th style={thStyle}>Laycan</th>
-            <th style={thStyle}>Price</th>
-            <th style={thStyle}>Quantity</th>
-            <th style={thStyle}>Actions</th>
-            <th style={thStyle}>Add Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trades.map((row, index) => (
-            <tr key={index}>
-              <td style={tdStyle}><input type="checkbox" /></td>
-              <td style={tdStyle}>{row.transaction_ref}</td>
-              <td style={tdStyle}>{row.product}</td>
-              <td style={tdStyle}>{row.seller}</td>
-              <td style={tdStyle}>{row.buyer}</td>
-              <td style={tdStyle}>{row.laycan}</td>
-              <td style={tdStyle}>{row.price}</td>
-              <td style={tdStyle}>{row.quantity}</td>
-              <td style={tdStyle}>
-                <button style={buttonStyle}>View</button>
-                <button style={buttonStyle}>Edit</button>
-                <button style={buttonStyle} onClick={() => handleDeleteClick(row)}>Delete</button>
-              </td>
-              <td style={tdStyle}>
-                <button style={buttonStyle}>Add</button>
-                <button style={buttonStyle}>View</button>
-              </td>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+          <thead>
+            <tr>
+              <th style={thStyle}>Select</th>
+              {allKeys.map((key) => (
+                <th style={thStyle} key={key}>{key}</th>
+              ))}
+              <th style={thStyle}>Actions</th>
+              <th style={thStyle}>Add Notes</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {trades.map((row, index) => (
+              <tr key={index}>
+                <td style={tdStyle}><input type="checkbox" /></td>
+                {allKeys.map((key) => (
+                  <td style={tdStyle} key={key}>{row[key]}</td>
+                ))}
+                <td style={tdStyle}>
+                  <button style={buttonStyle}>View</button>
+                  <button style={buttonStyle}>Edit</button>
+                  <button style={buttonStyle} onClick={() => handleDeleteClick(row)}>Delete</button>
+                </td>
+                <td style={tdStyle}>
+                  <button style={buttonStyle}>Add</button>
+                  <button style={buttonStyle}>View</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Copy Modal */}
       {isCopyModalOpen && (
@@ -139,7 +154,7 @@ const navigate = useNavigate();
                 <select style={selectStyle}>
                   <option>Select</option>
                   {trades.map((item, idx) => (
-                    <option key={idx}>{item.transaction_ref}</option>
+                    <option key={idx}>{item.tran_ref_no}</option>
                   ))}
                 </select>
               </div>
@@ -185,7 +200,7 @@ const navigate = useNavigate();
         </div>
       )}
 
-      <footer style={{ marginTop: '32px', textAlign: 'center', fontSize: '13px', color: '#6b7280' }}>
+      <footer style={{ marginTop: '320px', textAlign: 'center', fontSize: '13px', color: '#6b7280' }}>
         Copyright © 2019{' '}
         <a href="#" style={{ color: '#1F325C', textDecoration: 'underline' }}>
           Skarvi Systems

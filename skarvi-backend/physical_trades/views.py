@@ -2,10 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
-from .models import SellerTransactionSpr, HistoryRecord, BuyerTransactionSpr
-from .serializers import SellerTransactionSprSerializer, BuyerTransactionSprSerializer
+from .models import SellerTransactionSpr, HistoryRecord, BuyerTransactionSpr, InterimTransactionSPR
+from .serializers import SellerTransactionSprSerializer, BuyerTransactionSprSerializer, InterimTransactionSprSerializer
 from django.db import transaction
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 
 def num_with_comma(value):
     try:
@@ -200,13 +202,13 @@ class BuyerTransactionSprView(APIView):
 
     def get(self, request):
         tran_ref_no = request.query_params.get('tran_ref_no')
-        purchase_contract_id = request.query_params.get('purchase_contract_id')
+        sale_contract_id = request.query_params.get('sale_contract_id')
 
-        if tran_ref_no and purchase_contract_id:
+        if tran_ref_no and sale_contract_id:
             instance = get_object_or_404(
                 BuyerTransactionSpr,
                 tran_ref_no=tran_ref_no,
-                purchase_contract_id=purchase_contract_id
+                sale_contract_id=sale_contract_id
             )
             serializer = BuyerTransactionSprSerializer(instance)
             return Response(serializer.data)
@@ -219,7 +221,7 @@ class BuyerTransactionSprView(APIView):
     def post(self, request):
         data = request.data.copy()
         tran_ref_no = data.get('tran_ref_no')
-        purchase_contract_id = data.get('purchase_contract_id')
+        sale_contract_id = data.get('sale_contract_id')
 
         num_fields = [
             "contr_qty_mtons_air",
@@ -244,7 +246,7 @@ class BuyerTransactionSprView(APIView):
 
         instance = BuyerTransactionSpr.objects.filter(
             tran_ref_no=tran_ref_no,
-            purchase_contract_id=purchase_contract_id
+            sale_contract_id=sale_contract_id
         ).first()
 
         history_changes = []
@@ -256,7 +258,7 @@ class BuyerTransactionSprView(APIView):
                     history_changes.append(HistoryRecord(
                         user=request.user.username,
                         date=timezone.now(),
-                        updated_column=f"{tran_ref_no} SaleID: {purchase_contract_id} {field}",
+                        updated_column=f"{tran_ref_no} SaleID: {sale_contract_id} {field}",
                         old_value=old_value,
                         new_value=new_value
                     ))
@@ -275,11 +277,11 @@ class BuyerTransactionSprView(APIView):
     def put(self, request):
         data = request.data.copy()
         tran_ref_no = data.get('tran_ref_no')
-        purchase_contract_id = data.get('purchase_contract_id')
+        sale_contract_id = data.get('sale_contract_id')
         instance = get_object_or_404(
             BuyerTransactionSpr,
             tran_ref_no=tran_ref_no,
-            purchase_contract_id=purchase_contract_id
+            sale_contract_id=sale_contract_id
         )
 
         num_fields = [
@@ -311,7 +313,7 @@ class BuyerTransactionSprView(APIView):
                 history_changes.append(HistoryRecord(
                     user=request.user.username,
                     date=timezone.now(),
-                    updated_column=f"{tran_ref_no} SaleID: {purchase_contract_id} {field}",
+                    updated_column=f"{tran_ref_no} SaleID: {sale_contract_id} {field}",
                     old_value=old_value,
                     new_value=new_value
                 ))
@@ -328,11 +330,50 @@ class BuyerTransactionSprView(APIView):
     @transaction.atomic
     def delete(self, request):
         tran_ref_no = request.data.get('tran_ref_no')
-        purchase_contract_id = request.data.get('purchase_contract_id')
+        sale_contract_id = request.data.get('sale_contract_id')
         instance = get_object_or_404(
             BuyerTransactionSpr,
             tran_ref_no=tran_ref_no,
-            purchase_contract_id=purchase_contract_id
+            sale_contract_id=sale_contract_id
         )
         instance.delete()
         return Response({"detail": "Deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    
+
+
+class SendInterimTransactionEmailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        tran_ref_no = request.data.get('tran_ref_no')
+        recipient_email = request.data.get('email_id')
+
+        if not tran_ref_no or not recipient_email:
+            return Response(
+                {"error": "tran_ref_no and email_id are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        transaction = get_object_or_404(SellerTransactionSpr, tran_ref_no=tran_ref_no)
+
+        # Construct the email_id body
+        email_body = (
+            f"Interim Transaction Details\n\n"
+            f"Transaction Reference Number: {transaction.tran_ref_no or '-'}\n"
+            f"Nomination Reference: {transaction.nomination_ref or '-'}\n"
+            # f"No of Sellers: {transaction.no_of_sellers or '-'}\n"
+            # f"No of Load Ports: {transaction.no_of_load_ports or '-'}\n"
+            # f"No of Buyers: {transaction.no_of_buyers or '-'}\n"
+            # f"No of Discharge Ports: {transaction.no_of_discharge_ports or '-'}\n"
+            # f"Cargo Name: {transaction.cargo_name or '-'}\n"
+            # f"Vessel Name: {transaction.vessel_name or '-'}\n"
+            # f"Strategy Name: {transaction.strategy_name or '-'}\n"
+        )
+
+        subject = f"Interim Transaction - {transaction.tran_ref_no}"
+        from_email = settings.DEFAULT_FROM_EMAIL
+        try:
+            send_mail(subject, email_body, from_email, [recipient_email])
+            return Response({"detail": "email_id sent successfully."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
