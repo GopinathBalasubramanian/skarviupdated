@@ -35,7 +35,7 @@ const NavigatorPage = () => {
       padding: "40px",
     }}
   >
-    <h1 style={{ fontWeight: 400, fontSize: "2rem", marginBottom: "30px", color: "blue" }}>
+    <h1 style={{ fontWeight: 400, fontSize: "2rem", marginBottom: "300px", color: "blue" }}>
       <span style={{ fontWeight: 700 }}>Welcome to Skarvi Systems!</span>
     </h1>
 
