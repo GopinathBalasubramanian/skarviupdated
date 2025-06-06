@@ -2,15 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import { API_URL } from "../utils/utils";
 import { useNavigate } from "react-router-dom";
-const API_BASE_URL = API_URL
-
-const TABS = [
-  "Basic Details",
-  "Logistics",
-  "Quantity & Density",
-  "Pricing & Terms",
-  "Credit & Trade Info",
-];
+const API_BASE_URL = API_URL;
 
 interface Field {
   label: string;
@@ -20,101 +12,83 @@ interface Field {
   options?: string[];
 }
 const users = [
-    { id: "1", name: "Manolis Mihaletos" },
-    { id: "2", name: "Odysseas Pegkos" },
-    { id: "3", name: "George Pateros" },
-    { id: "4", name: "Michalis Tziovas" },
-    { id: "5", name: "Savitri" },
-  ];
-const FIELD_GROUPS: Record<string, Field[]> = {
-  "Basic Details": [
-    { label: "Trans. Reference", name: "tran_ref_no", required: true },
-    { label: "Purchase Contract ID", name: "purchase_contract_id", required: true },
-    { label: "Seller", name: "seller_name", required: true },
-    { label: "Trader", name: "trader_name", required: true },
-    { label: "Deal Date", name: "deal_date", type: "date", required: true },
-    { label: "Portfolio", name: "portfolio", required: true },
-    { label: "Cargo Desc.", name: "cargo_name", required: true },
-    { label: "Group", name: "group_name" },
-  ],
-  "Logistics": [
-    { label: "Destination", name: "destination", required: true },
-    { label: "2nd Destination", name: "second_destination" },
-    { label: "NOR Destination", name: "nor_desination" },
-    { label: "Port", name: "port" },
-    { label: "Laycan From", name: "seller_loading_laycan_from", type: "date", required: true },
-    { label: "Laycan To", name: "seller_loading_laycan_to", type: "date", required: true },
-    { label: "Narrow to", name: "seller_narrowed_days" },
-    { label: "Days By", name: "seller_narrowed_date", type: "date" },
-    { label: "BL Date", name: "seller_bl_date", type: "date" },
-    { label: "NOR Date", name: "seller_nor_date", type: "date" },
-    { label: "Est. BL Date", name: "seller_estimated_bl_date", type: "date" },
-    { label: "Est. NOR Date", name: "seller_estimated_nor_date", type: "date" },
-  ],
-  "Quantity & Density": [
-    { label: "Qty (Mtons Air)", name: "seller_contract_quantiity_mton_air", required: true },
-    { label: "Qty (Barrels)", name: "seller_contract_quantiity_barrels", required: true },
-    { label: "Cont Density", name: "seller_contract_specific_gravity" },
-    { label: "Loaded Density", name: "seller_loaded_specific_gravity" },
-    { label: "Price Density", name: "seller_price_calculation_density" },
-    { label: "O.T. (%)", name: "seller_Operational_Tolerence" },
-    { label: "Tol. Option", name: "seller_oper_tol_option", options: ["Buyer", "Seller", "Terminal"] },
-    { label: "Inv. Qty B.", name: "seller_invoice_qtybasis", options: ["bl", "out-turn"] },
-    { label: "P.B.", name: "seller_pricingbasis", options: ["Platts", "Future", "Fixed price"] },
-  ],
-  "Pricing & Terms": [
-    { label: "Terms", name: "seller_term", options: ["Fob", "Cfr", "Cif", "Dap", "Pipeline", "Trucks", "in_tank_transfer"] },
-    { label: "Term/Spot", name: "seller_term_spot", required: true, options: ["Term", "Spot"] },
-    { label: "Pricing Unit", name: "seller_Pricing_Unit", options: ["BBL", "Mt Air", "Mt Vac"] },
-    { label: "Pricing Period", name: "seller_pricing_period_basis", required: true, options: [
-      "After bl", "Around bl", "Before bl", "From bl", "After nor", "Around nor", "Before nor", "From nor", "fixed_pricing_period", "Trigger date"
-    ] },
-    { label: "Premium/Discount", name: "seller_premium_discount" },
-    { label: "Pricing Quote", name: "seller_pricing_quotes" },
-    { label: "Round Price To", name: "seller_price_rounded" },
-    { label: "Esc/D-Esc", name: "esc_de_esc_value", options: ["Yes", "No"] },
-    { label: "Payment Terms", name: "seller_payment_terms", options: ["Standby IC", "Documentary IC", "Open Account"] },
-    { label: "LC Issue Date", name: "seller_LC", type: "date" },
-    { label: "Prepayment Req.", name: "seller_LC_days", options: ["yes", "no"] },
-  ],
-  "Credit & Trade Info": [
-    { label: "Credit (D)", name: "seller_credit" },
-    { label: "Days After", name: "seller_credit_days", options: ["After", "Before", "From"] },
-    { label: "Credit Option", name: "seller_credit_option", options: ["BL", "COD", "LoadPort_NOR", "Discharge_NOR"] },
-    { label: "Laytime Hours", name: "seller_Laytime_Hours" },
-    { label: "Demurrage", name: "seller_anydeductions", options: ["Charterparty", "Afra"] },
-    { label: "Weekend Clause", name: "seller_weekend_clause", options: [
-      "Fridays/Holidays Before OR Sunday/Monday After", "All Holidays Before", "All Holidays After"
-    ] },
-    { label: "GTC", name: "gtc", options: ["Sonangol", "Shell", "BP", "Exxonmobil", "Chevron", "KPC", "TOTSA"] },
-    { label: "Traded By", name: "traded_by",options: users.map(user => user.name) },
-    { label: "Trade Created", name: "trade_created", type: "date" },
-    { label: "Approved By", name: "approved_by" },
-    { label: "Trade Approved", name: "trade_approved", type: "date" },
-  ],
-};
-
-const SULFUR_FIELDS: Field[] = [
-  { label: "Base Sulfur", name: "esc_base_density" },
-  { label: "Esc/De-Esc", name: "esc_deesc" },
-  { label: "Per", name: "esc_deesc1" },
-  { label: "Contractual Max Sulfur", name: "esc_contract_density" },
-  { label: "Loaded Sulfur", name: "esc_loaded_density" },
-  { label: "Base Kin Sulfur", name: "kin_base_density" },
-  { label: "Esc/De-Esc", name: "kin_deesc" },
-  { label: "Per", name: "kin_deesc1" },
-  { label: "Contractual Max Kin Sulfur", name: "kin_contract_density" },
-  { label: "Loaded Kin Sulfur", name: "kin_loaded_density" },
-  { label: "Base Al+Si", name: "ai_base_density" },
-  { label: "Esc/De-Esc", name: "ai_deesc" },
-  { label: "Per", name: "ai_deesc1" },
-  { label: "Contractual Max Al+Si", name: "ai_contract_density" },
-  { label: "Loaded Al+Si", name: "ai_loaded_density" },
+  { id: "1", name: "Manolis Mihaletos" },
+  { id: "2", name: "Odysseas Pegkos" },
+  { id: "3", name: "George Pateros" },
+  { id: "4", name: "Michalis Tziovas" },
+  { id: "5", name: "Savitri" },
 ];
 
-const TabbedTransactionForm: React.FC = () => {
+// All fields from all groups, in order (adjust as needed)
+const ALL_FIELDS: Field[] = [
+  // Basic Details
+  { label: "Trans. Reference", name: "tran_ref_no", required: true },
+  { label: "Purchase Contract ID", name: "purchase_contract_id", required: true },
+  { label: "Seller", name: "seller_name", required: true },
+  { label: "Trader", name: "trader_name", required: true },
+  { label: "Deal Date", name: "deal_date", type: "date", required: true },
+  { label: "Portfolio", name: "portfolio", required: true },
+  { label: "Cargo Desc.", name: "cargo_name", required: true },
+  { label: "Group", name: "group_name" },
+
+  // Logistics
+  { label: "Destination", name: "destination", required: true },
+  { label: "2nd Destination", name: "second_destination" },
+  { label: "NOR Destination", name: "nor_desination" },
+  { label: "Port", name: "port" },
+  { label: "Laycan From", name: "seller_loading_laycan_from", type: "date", required: true },
+  { label: "Laycan To", name: "seller_loading_laycan_to", type: "date", required: true },
+  { label: "Narrow to", name: "seller_narrowed_days" },
+  { label: "Days By", name: "seller_narrowed_date", type: "date" },
+  { label: "BL Date", name: "seller_bl_date", type: "date" },
+  { label: "NOR Date", name: "seller_nor_date", type: "date" },
+  { label: "Est. BL Date", name: "seller_estimated_bl_date", type: "date" },
+  { label: "Est. NOR Date", name: "seller_estimated_nor_date", type: "date" },
+
+  // Quantity & Density
+  { label: "Qty (Mtons Air)", name: "seller_contract_quantiity_mton_air", required: true },
+  { label: "Qty (Barrels)", name: "seller_contract_quantiity_barrels", required: true },
+  { label: "Cont Density", name: "seller_contract_specific_gravity" },
+  { label: "Loaded Density", name: "seller_loaded_specific_gravity" },
+  { label: "Price Density", name: "seller_price_calculation_density" },
+  { label: "O.T. (%)", name: "seller_Operational_Tolerence" },
+  { label: "Tol. Option", name: "seller_oper_tol_option", options: ["Buyer", "Seller", "Terminal"] },
+  { label: "Inv. Qty B.", name: "seller_invoice_qtybasis", options: ["bl", "out-turn"] },
+  { label: "P.B.", name: "seller_pricingbasis", options: ["Platts", "Future", "Fixed price"] },
+
+  // Pricing & Terms
+  { label: "Terms", name: "seller_term", options: ["Fob", "Cfr", "Cif", "Dap", "Pipeline", "Trucks", "in_tank_transfer"] },
+  { label: "Term/Spot", name: "seller_term_spot", required: true, options: ["Term", "Spot"] },
+  { label: "Pricing Unit", name: "seller_Pricing_Unit", options: ["BBL", "Mt Air", "Mt Vac"] },
+  { label: "Pricing Period", name: "seller_pricing_period_basis", required: true, options: [
+    "After bl", "Around bl", "Before bl", "From bl", "After nor", "Around nor", "Before nor", "From nor", "fixed_pricing_period", "Trigger date"
+  ] },
+  { label: "Premium/Discount", name: "seller_premium_discount" },
+  { label: "Pricing Quote", name: "seller_pricing_quotes" },
+  { label: "Round Price To", name: "seller_price_rounded" },
+  { label: "Esc/D-Esc", name: "esc_de_esc_value", options: ["Yes", "No"] },
+  { label: "Payment Terms", name: "seller_payment_terms", options: ["Standby IC", "Documentary IC", "Open Account"] },
+  { label: "LC Issue Date", name: "seller_LC", type: "date" },
+  { label: "Prepayment Req.", name: "seller_LC_days", options: ["yes", "no"] },
+
+  // Credit & Trade Info
+  { label: "Credit (D)", name: "seller_credit" },
+  { label: "Days After", name: "seller_credit_days", options: ["After", "Before", "From"] },
+  { label: "Credit Option", name: "seller_credit_option", options: ["BL", "COD", "LoadPort_NOR", "Discharge_NOR"] },
+  { label: "Laytime Hours", name: "seller_Laytime_Hours" },
+  { label: "Demurrage", name: "seller_anydeductions", options: ["Charterparty", "Afra"] },
+  { label: "Weekend Clause", name: "seller_weekend_clause", options: [
+    "Fridays/Holidays Before OR Sunday/Monday After", "All Holidays Before", "All Holidays After"
+  ] },
+  { label: "GTC", name: "gtc", options: ["Sonangol", "Shell", "BP", "Exxonmobil", "Chevron", "KPC", "TOTSA"] },
+  { label: "Traded By", name: "traded_by", options: users.map(user => user.name) },
+  { label: "Trade Created", name: "trade_created", type: "date" },
+  { label: "Approved By", name: "approved_by" },
+  { label: "Trade Approved", name: "trade_approved", type: "date" },
+];
+
+const PhysicalTradeForm: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedTab, setSelectedTab] = useState<string>(TABS[0]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
@@ -124,28 +98,20 @@ const TabbedTransactionForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    const token = localStorage.getItem("access_token"); // or your JWT key
-
     e.preventDefault();
+    const token = localStorage.getItem("access_token");
     try {
       setLoading(true);
-      await axios.post(`${API_BASE_URL}/physical_trades/api/save-trade`, formData,
-        {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }},
-      );
+      await axios.post(`${API_BASE_URL}/physical_trades/api/save-trade`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       alert("Trade saved successfully!");
       setFormData({});
     } catch (err: any) {
-  if (err.response && err.response.data) {
-    alert("Failed to save trade: " + JSON.stringify(err.response.data, null, 2));
-    console.error(err.response.data);
-  } else {
-    alert("Failed to save trade. Please try again.");
-    console.error(err);
-  }
-}
+      alert("Failed to save trade.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderField = ({ label, name, type = "text", required, options }: Field) => (
@@ -171,92 +137,46 @@ const TabbedTransactionForm: React.FC = () => {
   return (
     <div style={{ padding: "32px 16px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto 8px auto", fontSize: "16px", fontWeight: "bold", color: "#333" }}>
-  Trades &gt;{" "}
-  <span
-    style={{ color: "#1F325C", cursor: "pointer" }}
-    onClick={() => navigate("/physical-trades")}
-  >
-    Physical Trade
-  </span>
-  &gt; Add Bought Trade
-</div>
-
-      <div style={{
-        fontFamily: "Arial, sans-serif",
+        Trades &gt;{" "}
+        <span
+          style={{ color: "#1F325C", cursor: "pointer" }}
+          onClick={() => navigate("/physical-trades")}
+        >
+          Physical Trade
+        </span>
+        &gt; Add Bought Trade
+      </div>
+      <form onSubmit={handleSubmit} style={{
         maxWidth: 1200,
         margin: "0 auto",
+        background: "#fff",
         border: "1px solid #ccc",
         borderRadius: "8px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        background: "#f9f9f9",
+        padding: "24px"
       }}>
         <div style={{
-          display: "flex",
-          background: "#1F325C",
-          color: "#fff",
-          borderTopLeftRadius: "8px",
-          borderTopRightRadius: "8px",
+          display: "grid",
+          gridTemplateColumns: "repeat(6, 1fr)",
+          gap: "16px",
         }}>
-          {TABS.map((tab) => (
-            <div
-              key={tab}
-              onClick={() => setSelectedTab(tab)}
-              style={{
-                padding: "16px 24px",
-                cursor: "pointer",
-                background: selectedTab === tab ? "#fff" : "inherit",
-                color: selectedTab === tab ? "#1F325C" : "#fff",
-                borderRight: "1px solid #2d456a",
-                fontWeight: selectedTab === tab ? "bold" : "normal",
-                flexShrink: 0,
-                borderTopLeftRadius: "8px",
-                borderTopRightRadius: "8px",
-              }}
-            >
-              {tab}
-            </div>
-          ))}
+          {ALL_FIELDS.map(renderField)}
         </div>
-
-        <div style={{ padding: "24px" }}>
-          <form onSubmit={handleSubmit}>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: "16px",
-            }}>
-              {FIELD_GROUPS[selectedTab].map(renderField)}
-            </div>
-
-            {selectedTab === "Pricing & Terms" && formData.esc_de_esc_value === "yes" && (
-              <>
-                <h3 style={{ marginTop: 24 }}>Sulfur Esc/De-Esc Details</h3>
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-                  gap: "16px",
-                }}>
-                  {SULFUR_FIELDS.map(renderField)}
-                </div>
-              </>
-            )}
-
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 24 }}>
-              <button type="submit" style={{
-                background: "#1F325C",
-                color: "#fff",
-                padding: "10px 20px",
-                border: "none",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}>
-                {loading ? "Saving..." : "Save"}
-              </button>
-            </div>
-          </form>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 24 }}>
+          <button type="submit" style={{
+            background: "#1F325C",
+            color: "#fff",
+            padding: "10px 32px",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: "16px"
+          }}>
+            {loading ? "Saving..." : "SAVE"}
+          </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
@@ -264,8 +184,9 @@ const TabbedTransactionForm: React.FC = () => {
 const inputStyle: React.CSSProperties = {
   padding: "8px",
   fontSize: "14px",
-  border: "1px solid #ccc",
+  border: "1px solid #b6d4fe",
   borderRadius: "4px",
+  background: "#f6fbff"
 };
 
-export default TabbedTransactionForm;
+export default PhysicalTradeForm;
