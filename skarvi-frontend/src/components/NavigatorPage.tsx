@@ -24,47 +24,37 @@ const NavigatorPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        background: "white",
-        padding: "40px"
-      }}
-    >
-      <h1 style={{ fontWeight: 400, fontSize: "2rem", marginBottom: "40px" }}>
-        <span style={{ fontWeight: 700, color:"#1F325C" }}></span> Welcome to Skarvi Systems!
-      </h1>
-      <button
-        style={commonButtonStyle}
-        onClick={() => navigate("/dashboard")}
-      >
+  <div
+    style={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      background: "white",
+      padding: "40px",
+    }}
+  >
+    <h1 style={{ fontWeight: 400, fontSize: "2rem", marginBottom: "300px", color: "blue" }}>
+      <span style={{ fontWeight: 700 }}>Welcome to Skarvi Systems!</span>
+    </h1>
+
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "20px" }}>
+      <button style={commonButtonStyle} onClick={() => navigate("/dashboard")}>
         Navigator
       </button>
-      <button
-        style={commonButtonStyle}
-        onClick={() => navigate("/development")}
-      >
+      <button style={commonButtonStyle} onClick={() => navigate("/development")}>
         Trader Co-pilot
       </button>
-      <button
-        style={commonButtonStyle}
-        onClick={() => navigate("/development")}
-      >
-        
+      <button style={commonButtonStyle} onClick={() => navigate("/development")}>
         Demurrage Manager
       </button>
-      <button
-        style={commonButtonStyle}
-        onClick={() => navigate("/development")}
-      >
-      
+      <button style={commonButtonStyle} onClick={() => navigate("/development")}>
         Fleet Compass
       </button>
     </div>
-  );
+  </div>
+);
 };
 
 export default NavigatorPage;

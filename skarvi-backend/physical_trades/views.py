@@ -6,6 +6,7 @@ from .models import SellerTransactionSpr, HistoryRecord, BuyerTransactionSpr, In
 from .serializers import SellerTransactionSprSerializer, BuyerTransactionSprSerializer, InterimTransactionSprSerializer
 from django.db import transaction
 from django.utils import timezone
+
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -377,3 +378,78 @@ class SendInterimTransactionEmailView(APIView):
             return Response({"detail": "email_id sent successfully."}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CloneTransactionView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request):
+        # Retrieve the 'id' of the source transaction from the request body
+        source_id = request.data.get('id')
+        move_or_copy = request.data.get('mode')
+
+        if not source_id or not move_or_copy:
+            return Response({"error": "Missing 'id' or 'mode' in request data."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get original seller record using the provided ID
+        seller = SellerTransactionSpr.objects.filter(id=source_id).first()
+
+        if not seller:
+            return Response({"error": f"Seller record with ID '{source_id}' not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # --- IMPORTANT CHANGE: Use the original tran_ref_no ---
+        new_tran_ref_no = seller.tran_ref_no
+        print(f"DEBUG: Using original tran_ref_no: {new_tran_ref_no}")
+        # --- END IMPORTANT CHANGE ---
+
+        # Clone seller data
+        seller_data = SellerTransactionSprSerializer(seller).data
+        seller_data['tran_ref_no'] = new_tran_ref_no  # Assign the original tran_ref_no
+        seller_data.pop('id', None)  # Ensure 'id' is removed for a new instance (so a new record is created)
+
+        seller_serializer = SellerTransactionSprSerializer(data=seller_data)
+        try:
+            seller_serializer.is_valid(raise_exception=True)
+            seller_obj = seller_serializer.save()
+        except Exception as e:
+            print(f"DEBUG: Seller serializer validation failed: {e}")
+            print(f"DEBUG: Seller serializer errors: {seller_serializer.errors}")
+            return Response(seller_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get original buyer record (if it exists)
+        # Assuming seller and buyer records are linked by their 'tran_ref_no'
+        # We use the original seller's tran_ref_no to find the corresponding buyer record
+        buyer = BuyerTransactionSpr.objects.filter(tran_ref_no=seller.tran_ref_no).first()
+
+        buyer_obj = None
+        if buyer:
+            buyer_data = BuyerTransactionSprSerializer(buyer).data
+            buyer_data['tran_ref_no'] = new_tran_ref_no  # Assign the same original tran_ref_no
+            buyer_data.pop('id', None)  # Ensure 'id' is removed for a new instance
+
+            buyer_serializer = BuyerTransactionSprSerializer(data=buyer_data)
+            try:
+                buyer_serializer.is_valid(raise_exception=True)
+                buyer_obj = buyer_serializer.save()
+            except Exception as e:
+                print(f"DEBUG: Buyer serializer validation failed: {e}")
+                print(f"DEBUG: Buyer serializer errors: {buyer_serializer.errors}")
+                return Response(buyer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # If "Move", delete original records (seller and buyer)
+        if move_or_copy.lower() == "move":
+            seller.delete()
+            if buyer:  # Only delete buyer if it existed
+                buyer.delete()
+            message = "Transaction moved successfully."
+        else: # Default to 'copy' if not 'move'
+            message = "Transaction copied successfully."
+
+
+        return Response({
+            "message": message,
+            "new_tran_ref_no": new_tran_ref_no, # This will now be the original tran_ref_no
+            "seller": SellerTransactionSprSerializer(seller_obj).data,
+            "buyer": BuyerTransactionSprSerializer(buyer_obj).data if buyer_obj else None
+        }, status=status.HTTP_201_CREATED)

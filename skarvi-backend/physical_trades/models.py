@@ -203,6 +203,7 @@ class SellerTransactionSpr(models.Model):
     timebar_date = models.CharField(max_length=100, blank=True, null=True)
     percentage = models.CharField(max_length=100, blank=True, null=True)
     percentage1 = models.CharField(max_length=100, blank=True, null=True)
+    email_id = models.CharField(max_length=100, blank=True, null=True)
 
     
 class BuyerTransactionSpr(models.Model):
@@ -391,6 +392,7 @@ class BuyerTransactionSpr(models.Model):
     period_from = models.DateField(blank=True, null=True)
     period_to = models.DateField(blank=True, null=True)
     inv_per = models.CharField(max_length=10, blank=True, null=True)
+    email_id = models.EmailField(max_length=254, blank=True, null=True)
 
 
 class HistoryRecord(models.Model):
