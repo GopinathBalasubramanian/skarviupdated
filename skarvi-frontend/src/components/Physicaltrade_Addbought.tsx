@@ -123,6 +123,11 @@ const TabbedTransactionForm: React.FC = () => {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
+  // Dynamic field logic
+  const showLC = formData.seller_payment_terms && formData.seller_payment_terms !== "Open Account";
+  const showPrepayment = formData.seller_LC_days === "Yes";
+  const showSulfur = formData.esc_de_esc_value === "Yes";
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -153,25 +158,30 @@ const TabbedTransactionForm: React.FC = () => {
     }
   };
 
-  const renderField = ({ label, name, type = "text", required, options }: Field) => (
-    <div key={name} style={{ display: "flex", flexDirection: "column" }}>
-      <label style={{ fontWeight: "bold", marginBottom: "4px" }}>
-        {label} {required && <span style={{ color: "red" }}>*</span>}
-      </label>
-      {options ? (
-        <select name={name} value={formData[name] || ""} onChange={handleChange} style={inputStyle}>
-          <option value="">Select</option>
-          {options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input type={type} name={name} value={formData[name] || ""} onChange={handleChange} style={inputStyle} />
-      )}
-    </div>
-  );
+  const renderField = ({ label, name, type = "text", required, options }: Field) => {
+    // Show/hide LC and prepayment fields
+    if (name === "seller_LC" && !showLC) return null;
+    if (name === "prepayment" && !showPrepayment) return null;
+    return (
+      <div key={name} style={{ display: "flex", flexDirection: "column" }}>
+        <label style={{ fontWeight: "bold", marginBottom: "4px" }}>
+          {label} {required && <span style={{ color: "red" }}>*</span>}
+        </label>
+        {options ? (
+          <select name={name} value={formData[name] || ""} onChange={handleChange} style={inputStyle}>
+            <option value="">Select</option>
+            {options.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input type={type} name={name} value={formData[name] || ""} onChange={handleChange} style={inputStyle} />
+        )}
+      </div>
+    );
+  };
 
   return (
     <div style={{ padding: "32px 16px" }}>
@@ -233,7 +243,7 @@ const TabbedTransactionForm: React.FC = () => {
               {FIELD_GROUPS[selectedTab].map(renderField)}
             </div>
 
-            {selectedTab === "Pricing & Terms" && formData.esc_de_esc_value === "Yes" && (
+            {selectedTab === "Pricing & Terms" && showSulfur && (
               <>
                 <h3 style={{ marginTop: 24 }}>Sulfur Esc/De-Esc Details</h3>
                 <div style={{
