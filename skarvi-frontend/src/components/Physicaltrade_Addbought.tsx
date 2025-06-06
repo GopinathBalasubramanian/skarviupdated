@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../utils/utils";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +28,6 @@ const users = [
   { id: "5", name: "Savitri" },
 ];
 
-// All fields from screenshot, grouped by tab
 const FIELD_GROUPS: Record<string, Field[]> = {
   "Basic Details": [
     { label: "Transaction Reference", name: "tran_ref_no", required: true },
@@ -117,11 +116,48 @@ const SULFUR_FIELDS: Field[] = [
   { label: "Loaded Al+Si", name: "ai_loaded_density" },
 ];
 
+function generateTranRefNo() {
+  // Example: TRN-YYYYMMDD-HHMMSS
+  const now = new Date();
+  return (
+    "TRN-" +
+    now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0") +
+    "-" +
+    String(now.getHours()).padStart(2, "0") +
+    String(now.getMinutes()).padStart(2, "0") +
+    String(now.getSeconds()).padStart(2, "0")
+  );
+}
+
+function generatePurchaseContractId() {
+  // Example: PCID-YYYYMMDD-RANDOM
+  const now = new Date();
+  return (
+    "PCID-" +
+    now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0") +
+    "-" +
+    Math.floor(1000 + Math.random() * 9000)
+  );
+}
+
 const TabbedTransactionForm: React.FC = () => {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState<string>(TABS[0]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+
+  // Auto-generate Transaction Reference and Purchase Contract ID on mount
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      tran_ref_no: generateTranRefNo(),
+      purchase_contract_id: generatePurchaseContractId(),
+    }));
+  }, []);
 
   // Dynamic field logic
   const showLC = formData.seller_payment_terms && formData.seller_payment_terms !== "Open Account";
@@ -131,6 +167,27 @@ const TabbedTransactionForm: React.FC = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Calculation logic for contract qty/barrels
+  const handleQtyBarrelsCalc = () => {
+    // Example: 1 metric ton = 7.33 barrels (for crude oil, approx)
+    // If user enters one, calculate the other if possible
+    const mt = parseFloat(formData.seller_contract_quantiity_mton_air || "");
+    const bbl = parseFloat(formData.seller_contract_quantiity_barrels || "");
+    if (!isNaN(mt) && (!formData.seller_contract_quantiity_barrels || isNaN(bbl))) {
+      setFormData((prev) => ({
+        ...prev,
+        seller_contract_quantiity_barrels: (mt * 7.33).toFixed(2),
+      }));
+    } else if (!isNaN(bbl) && (!formData.seller_contract_quantiity_mton_air || isNaN(mt))) {
+      setFormData((prev) => ({
+        ...prev,
+        seller_contract_quantiity_mton_air: (bbl / 7.33).toFixed(2),
+      }));
+    } else {
+      alert("Enter either Contract Qty. Mtons Air or Barrels to calculate the other.");
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -144,7 +201,10 @@ const TabbedTransactionForm: React.FC = () => {
         }
       });
       alert("Trade saved successfully!");
-      setFormData({});
+      setFormData({
+        tran_ref_no: generateTranRefNo(),
+        purchase_contract_id: generatePurchaseContractId(),
+      });
     } catch (err: any) {
       if (err.response && err.response.data) {
         alert("Failed to save trade: " + JSON.stringify(err.response.data, null, 2));
@@ -162,6 +222,8 @@ const TabbedTransactionForm: React.FC = () => {
     // Show/hide LC and prepayment fields
     if (name === "seller_LC" && !showLC) return null;
     if (name === "prepayment" && !showPrepayment) return null;
+    // Make tran_ref_no and purchase_contract_id readonly
+    const isReadonly = name === "tran_ref_no" || name === "purchase_contract_id";
     return (
       <div key={name} style={{ display: "flex", flexDirection: "column" }}>
         <label style={{ fontWeight: "bold", marginBottom: "4px" }}>
@@ -177,7 +239,14 @@ const TabbedTransactionForm: React.FC = () => {
             ))}
           </select>
         ) : (
-          <input type={type} name={name} value={formData[name] || ""} onChange={handleChange} style={inputStyle} />
+          <input
+            type={type}
+            name={name}
+            value={formData[name] || ""}
+            onChange={handleChange}
+            style={inputStyle}
+            readOnly={isReadonly}
+          />
         )}
       </div>
     );
@@ -242,6 +311,28 @@ const TabbedTransactionForm: React.FC = () => {
             }}>
               {FIELD_GROUPS[selectedTab].map(renderField)}
             </div>
+
+            {/* Calculation button for Contract Qty and Barrels */}
+            {selectedTab === "Quantity & Density" && (
+              <div style={{ gridColumn: "1 / -1", margin: "16px 0", textAlign: "center" }}>
+                <button
+                  type="button"
+                  onClick={handleQtyBarrelsCalc}
+                  style={{
+                    background: "#1F325C",
+                    color: "#fff",
+                    padding: "8px 24px",
+                    border: "none",
+                    borderRadius: "6px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    fontSize: "15px"
+                  }}
+                >
+                  Calculate Contract Qty & Barrels
+                </button>
+              </div>
+            )}
 
             {selectedTab === "Pricing & Terms" && showSulfur && (
               <>
