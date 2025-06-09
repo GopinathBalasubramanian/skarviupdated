@@ -6,6 +6,34 @@ from .models import SellerTransactionSpr, HistoryRecord, BuyerTransactionSpr, In
 from .serializers import SellerTransactionSprSerializer, BuyerTransactionSprSerializer, InterimTransactionSprSerializer
 from django.db import transaction
 from django.utils import timezone
+from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import (
+    QuantityPositionSummary,
+    QuantityPositionDaily,
+    QPESummary,
+    QPEDaily,
+    VaRReport,
+    DailyM2MPnL
+)
+from .serializers import (
+    QuantityPositionSummarySerializer,
+    QuantityPositionDailySerializer,
+    QPESummarySerializer,
+    QPEDailySerializer,
+    VaRReportSerializer,
+    DailyM2MPnLSerializer
+)
+from .models import (
+    QuantityPositionSummary, QuantityPositionDaily,
+    QPESummary, QPEDaily, VaRReport
+)
+from .serializers import (
+    QuantityPositionSummarySerializer, QuantityPositionDailySerializer,
+    QPESummarySerializer, QPEDailySerializer, VaRReportSerializer
+)   
+
 
 from django.core.mail import send_mail
 from django.conf import settings
@@ -16,15 +44,27 @@ def num_with_comma(value):
     except Exception:
         return 0.0
 
+def save_note(request):
+        tran_ref_no = request.data.get("tran_ref_no")
+        note = request.data.get("note")
+
+        try:
+            trade = SellerTransactionSpr.objects.get(tran_ref_no=tran_ref_no)
+            trade.note = note  # make sure 'note' field exists in model
+            trade.save()
+            return Response({"message": "Note saved successfully."}, status=200)
+        except SellerTransactionSpr.DoesNotExist:
+            return Response({"error": "Trade not found."}, status=404)    
+        
+
 class SellerTransactionSprView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        tran_ref_no = request.query_params.get('Tran_Ref_No') or request.query_params.get('tran_ref_no')
-        purchase_contract_id = request.query_params.get('Purchasecontractid') or request.query_params.get('purchase_contract_id')
+    def get(self, request, tran_ref_no=None, purchase_contract_id=None):
+        tran_ref_no = tran_ref_no or request.query_params.get('tran_ref_no')
+        purchase_contract_id = purchase_contract_id or request.query_params.get('purchase_contract_id')
 
         if tran_ref_no and purchase_contract_id:
-            # Get a single record
             instance = get_object_or_404(
                 SellerTransactionSpr,
                 tran_ref_no=tran_ref_no,
@@ -32,12 +72,24 @@ class SellerTransactionSprView(APIView):
             )
             serializer = SellerTransactionSprSerializer(instance)
             return Response(serializer.data)
-        else:
-            # Get all records
-            queryset = SellerTransactionSpr.objects.all()
-            serializer = SellerTransactionSprSerializer(queryset, many=True)
-            return Response(serializer.data)
 
+        queryset = SellerTransactionSpr.objects.all()
+        serializer = SellerTransactionSprSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+    def save_note(request):
+        tran_ref_no = request.data.get("tran_ref_no")
+        note = request.data.get("note")
+
+        try:
+            trade = SellerTransactionSpr.objects.get(tran_ref_no=tran_ref_no)
+            trade.note = note  # make sure 'note' field exists in model
+            trade.save()
+            return Response({"message": "Note saved successfully."}, status=200)
+        except SellerTransactionSpr.DoesNotExist:
+            return Response({"error": "Trade not found."}, status=404)    
+        
     @transaction.atomic
     def post(self, request):
         data = request.data.copy()
@@ -217,6 +269,19 @@ class BuyerTransactionSprView(APIView):
             queryset = BuyerTransactionSpr.objects.all()
             serializer = BuyerTransactionSprSerializer(queryset, many=True)
             return Response(serializer.data)
+        
+    def save_note(request):
+        tran_ref_no = request.data.get("tran_ref_no")
+        sale_contract_id = request.data.get("sale_contract_id")
+        note = request.data.get("note")
+
+        try:
+            trade = BuyerTransactionSpr.objects.get(tran_ref_no=tran_ref_no, sale_contract_id=sale_contract_id)
+            trade.note = note  # make sure 'note' field exists in model
+            trade.save()
+            return Response({"message": "Note saved successfully."}, status=200)
+        except BuyerTransactionSpr.DoesNotExist:
+            return Response({"error": "Trade not found."}, status=404)
         
     @transaction.atomic
     def post(self, request):
@@ -453,3 +518,39 @@ class CloneTransactionView(APIView):
             "seller": SellerTransactionSprSerializer(seller_obj).data,
             "buyer": BuyerTransactionSprSerializer(buyer_obj).data if buyer_obj else None
         }, status=status.HTTP_201_CREATED)
+
+
+class QuantityPositionSummaryListView(APIView):
+    def get(self, request):
+        queryset = QuantityPositionSummary.objects.all()
+        serializer = QuantityPositionSummarySerializer(queryset, many=True)
+        print('response', serializer.data)
+        return Response(serializer.data)
+
+class QuantityPositionDailyListView(APIView):
+    def get(self, request):
+        queryset = QuantityPositionDaily.objects.all()
+        serializer = QuantityPositionDailySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class QPESummaryListView(APIView):
+    def get(self, request):
+        queryset = QPESummary.objects.all()
+        serializer = QPESummarySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class QPEDailyListView(APIView):
+    def get(self, request):
+        queryset = QPEDaily.objects.all()
+        serializer = QPEDailySerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class VaRReportListView(APIView):
+    def get(self, request):
+        queryset = VaRReport.objects.all()
+        serializer = VaRReportSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+class DailyM2MPnLListView(generics.ListAPIView):
+    queryset = DailyM2MPnL.objects.all()
+    serializer_class = DailyM2MPnLSerializer

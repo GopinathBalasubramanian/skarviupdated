@@ -21,8 +21,9 @@ const DISPLAY_COLUMNS = [
 ];
 
 const PhysicalTradesEditTrade = () => {
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState<"add" | "view" | false>(false);
+  const [noteContent, setNoteContent] = useState(""); 
   const [isSendMailModalOpen, setIsSendMailModalOpen] = useState(false);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [mailId, setMailId] = useState("");
   const [trades, setTrades] = useState<any[]>([]);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
@@ -257,9 +258,26 @@ const PhysicalTradesEditTrade = () => {
                   </button>
                 </td>
                 <td style={tdStyle}>
-                  <button style={buttonStyle}>Add</button>
-                  <button style={buttonStyle}>View</button>
-                </td>
+  <button
+    style={buttonStyle}
+    onClick={() => {
+      setSelectedTrade(row);
+      setIsNoteModalOpen("add");
+    }}
+  >
+    Add
+  </button>
+  <button
+    style={buttonStyle}
+    onClick={() => {
+      setSelectedTrade(row);
+      setIsNoteModalOpen("view");
+    }}
+  >
+    View
+  </button>
+</td>
+
               </tr>
             ))}
           </tbody>
@@ -334,6 +352,7 @@ const PhysicalTradesEditTrade = () => {
           </div>
         </div>
       )}
+      
 
       {/* Send Mail Modal */}
       {isSendMailModalOpen && (
@@ -475,6 +494,71 @@ const PhysicalTradesEditTrade = () => {
           </div>
         </div>
       )}
+      {isNoteModalOpen && selectedTrade && (
+  <Modal
+    title={isNoteModalOpen === "add" ? "Add Note" : "View Note"}
+    onClose={() => {
+      setIsNoteModalOpen(false);
+      setNoteContent("");
+    }}
+  >
+    {isNoteModalOpen === "add" ? (
+      <>
+        <textarea
+          rows={5}
+          style={{
+            width: "100%",
+            padding: "10px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            border: "1px solid #ccc",
+            marginBottom: "16px",
+          }}
+          placeholder="Write your comment..."
+          value={noteContent}
+          onChange={(e) => setNoteContent(e.target.value)}
+        />
+        <div style={{ textAlign: "center" }}>
+          <button
+            style={submitButtonStyle}
+            onClick={async () => {
+              try {
+                const token = localStorage.getItem("access_token");
+                await axios.post(
+                  `${API_URL}/physical_trades/api/save-note/`,
+                  {
+                    tran_ref_no: selectedTrade.tran_ref_no,
+                    note: noteContent,
+                  },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+                alert("Note saved successfully!");
+                setIsNoteModalOpen(false);
+              } catch (err) {
+                console.error("Error saving note:", err);
+                alert("Failed to save note.");
+              }
+            }}
+          >
+            Save Note
+          </button>
+        </div>
+      </>
+    ) : (
+      <div style={{ fontSize: "14px", color: "#374151", whiteSpace: "pre-wrap" }}>
+        <strong>Note:</strong>
+        <br />
+        {selectedTrade?.note || "No note available."}
+      </div>
+    )}
+  </Modal>
+)}
+
 
       <footer
         style={{

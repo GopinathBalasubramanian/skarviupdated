@@ -4,7 +4,244 @@
   padding: 0;
   box-sizing: border-box;
 }
+.dashboard-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
 
+.dashboard-buttons-panel {
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-nav-button {
+  width: 160px;
+  height: 100px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  white-space: normal;
+  padding: 16px;
+  color: white;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.dashboard-nav-button:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #00408a 100%);
+  transform: translateY(-3px);
+}
+
+.dashboard-nav-button:active {
+  transform: scale(0.96);
+}
+
+.dashboard-card {
+  border-radius: 12px;
+}
+
+.loading-spinner-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.dashboard-footer {
+  text-align: center;
+  padding: 16px;
+  margin-top: 40px;
+  color: #888;
+}
+
+/* Dashboard.css (No changes needed from previous full code) */
+
+/* Basic body styling for consistent background and font */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  background-color: #f0f2f5; /* Light grey background */
+  min-height: 100vh; /* Ensure body takes full viewport height */
+  display: flex; /* Use flexbox to push footer to bottom if content is short */
+  flex-direction: column;
+}
+
+/* Main container for the dashboard content */
+.dashboard-container {
+  flex: 1; /* Allows container to grow and push footer down */
+  padding: 20px;
+  max-width: 1200px; /* Max width for content to prevent it from stretching too wide on large screens */
+  margin: 0 auto; /* Centers the container horizontally */
+  box-sizing: border-box; /* Include padding in element's total width and height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Styling for the button group */
+.dashboard-buttons-panel {
+  margin-bottom: 20px;
+  display: flex; /* Arrange buttons horizontally */
+  flex-wrap: wrap; /* Allow buttons to wrap to next line on smaller screens */
+  gap: 15px; /* Increased space between buttons */
+  justify-content: center; /* Center buttons if there's extra space */
+}
+
+/* Specific styling for the navigation buttons */
+.dashboard-nav-button.ant-btn {
+  /* Initial state */
+  min-width: 180px; /* Make buttons a bit wider */
+  height: 60px; /* Make buttons taller */
+  font-size: 1.1em; /* Larger font size */
+  transition: all 0.3s ease-in-out; /* Smooth transition for hover/active effects */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09); /* Soft shadow for "big box" feel */
+  border-radius: 8px; /* Rounded corners */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover effect for buttons */
+.dashboard-nav-button.ant-btn:hover {
+  transform: translateY(-3px) scale(1.03); /* Lift and slightly zoom out */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* More prominent shadow on hover */
+  border-color: var(--ant-primary-color); /* Highlight border on hover */
+}
+
+/* Click/Active effect for buttons */
+.dashboard-nav-button.ant-btn:active,
+.dashboard-nav-button.ant-btn-primary { /* Also apply some active style to primary button */
+  transform: scale(1.01); /* Slight zoom in on click */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12); /* Adjusted shadow */
+  border-color: var(--ant-primary-color-active);
+}
+
+/* Card styling for a visually appealing raised effect */
+.dashboard-card.ant-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer, more prominent shadow */
+  border-radius: 10px; /* More rounded corners */
+  overflow: hidden; /* Ensures table corners are also rounded within the card */
+  flex: 1; /* Allow card to take remaining vertical space */
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card.ant-card .ant-card-body {
+    flex: 1; /* Allow card body to take remaining vertical space */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Table specific adjustments for responsiveness and appearance */
+.ant-table-wrapper {
+  overflow-x: auto; /* Enable horizontal scrolling for the table */
+  width: 100%; /* Ensure table wrapper takes full available width */
+  border-radius: 8px; /* Slightly rounded corners for the table itself */
+  flex: 1; /* Allow table to take remaining vertical space within card body */
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-table {
+  flex: 1; /* Make the actual table content take available space */
+}
+
+/* Sticky table header (optional, uncomment if needed) */
+/* This makes the header stay at the top when scrolling the table vertically */
+/* .ant-table-thead > tr > th {
+  position: sticky !important;
+  top: 0;
+  z-index: 1;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+} */
+
+/* Center the loading spinner */
+.loading-spinner-container {
+  text-align: center;
+  padding: 80px 0; /* Ample vertical padding for spinner */
+  flex: 1; /* Allows spinner container to fill available space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styling for empty state */
+.ant-empty {
+    padding: 50px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* Footer styling */
+.dashboard-footer {
+  margin-top: 320px; /* Space above footer */
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-size: 0.85em;
+  border-top: 1px solid #e8e8e8; /* Subtle separator line */
+  background-color: #ffffff; /* White background for the footer */
+  border-radius: 10px; /* Match card border radius */
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow from top */
+}
+
+/* Media queries for better responsiveness on smaller screens */
+@media (max-width: 992px) {
+    .dashboard-nav-button.ant-btn {
+        min-width: 150px;
+        height: 50px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 15px;
+  }
+  .dashboard-buttons-panel {
+    justify-content: flex-start; /* Align buttons to start on smaller screens */
+    gap: 10px;
+  }
+  .dashboard-card.ant-card .ant-card-head {
+    font-size: 1.1em; /* Adjust card title size */
+  }
+  .dashboard-nav-button.ant-btn {
+    min-width: 120px;
+    height: 45px;
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 10px;
+  }
+  .dashboard-buttons-panel button {
+    width: 100%; /* Make buttons full width on very small screens */
+    min-width: unset; /* Remove min-width to allow full width */
+  }
+  .dashboard-footer {
+    font-size: 0.8em;
+  }
+}
+
+/* Optional: Striped rows for better readability */
+.ant-table-row.table-row-light {
+  background-color: #ffffff; /* White */
+}
+
+.ant-table-row.table-row-dark {
+  background-color: #f9f9f9; /* Light grey */
+}
 body {
   font-family: 'Roboto', sans-serif; /* Set Roboto font for body */
   background-color: #f4f5f7;
