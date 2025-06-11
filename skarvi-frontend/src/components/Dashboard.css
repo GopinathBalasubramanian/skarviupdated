@@ -1,3 +1,57 @@
+.dashboard-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.dashboard-buttons-panel {
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-nav-button {
+  width: 160px;
+  height: 100px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  white-space: normal;
+  padding: 16px;
+  color: white;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.dashboard-nav-button:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #00408a 100%);
+  transform: translateY(-3px);
+}
+
+.dashboard-nav-button:active {
+  transform: scale(0.96);
+}
+
+.dashboard-card {
+  border-radius: 12px;
+}
+
+.loading-spinner-container {
+  text-align: center;
+  padding: 40px;
+}
+
+.dashboard-footer {
+  text-align: center;
+  padding: 16px;
+  margin-top: 40px;
+  color: #888;
+}
 /* Reset some default styles for better consistency */
 * {
   margin: 0;
@@ -426,4 +480,300 @@ h1,
 .status-in-progress {
   background-color: orange;
   color: white;
+}
+You're absolutely right! I've already provided the CSS for the updated `Dashboard.tsx` in my previous comprehensive response.
+
+I will provide it again, ensuring it's complete and matches the updated JSX for `Dashboard.tsx`.
+
+Here's the `Dashboard.css` content you need:
+
+**`src/components/Dashboard.css`**
+
+```css
+/* src/components/Dashboard.css */
+
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f0f2f5; /* Light grey background for the overall dashboard */
+  padding: 0; /* Remove padding from main container */
+}
+
+/* --- Top Banner Section --- */
+.dashboard-header-banner {
+  height: 200px; /* Adjust height as needed */
+  background: linear-gradient(135deg, #a8dadc 0%, #457b9d 100%); /* Blue/green gradient to simulate image */
+  position: relative;
+  overflow: hidden; /* Hide overflow from any simulated shapes */
+  padding: 20px 50px; /* Padding for content */
+  display: flex;
+  align-items: flex-end; /* Align content to bottom */
+  justify-content: space-between; /* Space out title and weather */
+  color: white; /* Text color for banner */
+  /* You can add background-image here if you have the asset */
+  /* background-image: url('/path/to/your/banner-image.png'); */
+  background-size: cover;
+  background-position: center;
+}
+
+.dashboard-header-banner .banner-content {
+  width: 100%;
+}
+
+.dashboard-header-banner .greeting-text {
+  color: white !important; /* Ensure text is white */
+  font-weight: 600;
+  margin-bottom: 0; /* Remove default margin */
+}
+
+.dashboard-header-banner .location-weather {
+  color: white;
+  font-size: 1rem;
+}
+
+/* --- Main Content Area --- */
+.dashboard-main-content {
+  padding: 24px; /* Padding around the main content cards */
+  margin-top: 30px; /* Pull content up slightly to overlap the banner */
+  position: relative;
+  z-index: 1; /* Ensure it's above the banner */
+}
+
+.dashboard-main-content .section-row {
+  margin-bottom: 24px; /* Spacing between rows of cards/sections */
+}
+
+/* --- Card Styles (General) --- */
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.ant-card-head {
+  border-bottom: none; /* Remove default card title border */
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 16px 24px;
+}
+
+.ant-card-body {
+  padding: 24px;
+}
+
+/* --- Awaiting Action Card --- */
+.action-card .task-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0; /* Separator between tasks */
+}
+
+.action-card .task-item:last-child {
+  border-bottom: none; /* No border for the last item */
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.action-card .task-icon {
+  font-size: 24px;
+  color: #1890ff; /* Ant Design blue */
+  margin-right: 15px;
+}
+
+.action-card .due-date-text {
+  font-weight: 500;
+  color: #ff4d4f; /* Red for overdue/important */
+  font-size: 0.85rem;
+}
+
+/* --- Quick Tasks Card --- */
+.quick-tasks-card .quick-task-button {
+  height: 48px; /* Taller buttons */
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.85);
+  box-shadow: none; /* Remove default button shadow */
+}
+
+.quick-tasks-card .quick-task-button:hover,
+.quick-tasks-card .quick-task-button:focus {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+/* --- Metric Cards (3M, 1M, $294) --- */
+.metric-card {
+  text-align: center;
+  overflow: hidden; /* Hide parts of the trend line */
+  cursor: pointer; /* Indicate clickability */
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  position: relative;
+  height: 50px; /* Space for icon and trend line */
+}
+
+.metric-icon {
+  font-size: 36px; /* Larger icon */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.trend-line-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px; /* Adjust as needed */
+  height: 50px; /* Height for the simulated line */
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end; /* Align line to bottom of its container */
+}
+
+.trend-line {
+  width: 120%; /* Extend to simulate curve outside bounds */
+  height: 30px; /* Height of the line itself */
+  border-radius: 50%; /* To give a curved appearance */
+  transform: rotate(-10deg) translateX(-10%); /* Slight curve */
+  opacity: 0.6;
+  position: relative;
+  top: 10px; /* Adjust vertical position */
+}
+
+/* Specific trend line colors */
+.yellow-gradient {
+  background: linear-gradient(to right, #ffd700, #ffa500); /* Yellow/orange */
+}
+.pink-gradient {
+  background: linear-gradient(to right, #ff69b4, #ff1493); /* Pink */
+}
+.teal-gradient {
+  background: linear-gradient(to right, #20b2aa, #008080); /* Teal */
+}
+
+
+.metric-value-container {
+  margin-bottom: 10px;
+}
+
+.metric-value {
+  font-size: 2.5rem !important; /* Large, bold number */
+  font-weight: 700 !important;
+  margin-bottom: 0 !important;
+}
+
+.metric-label {
+  font-size: 1rem;
+  color: #666;
+}
+
+.metric-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.trend-arrow {
+  margin-right: 5px;
+  font-size: 0.9rem;
+}
+
+/* Specific text colors for metrics */
+.yellow-text { color: #ffa500; }
+.pink-text { color: #ff1493; }
+.teal-text { color: #008080; }
+.red-text { color: #ff4d4f; }
+.green-text { color: #52c41a; }
+
+
+/* --- Report Cards Section (Now styled like Metric Cards) --- */
+.report-cards-row {
+  margin-top: 30px; /* Space above this new section */
+}
+
+.report-card {
+  height: 200px; /* Fixed height for consistency, adjust as needed */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute content */
+  align-items: center; /* Center horizontally */
+  text-align: center;
+  background-color: #fff; /* Ensure white background */
+}
+
+.report-card.active-report-card {
+  border: 2px solid #1890ff; /* Highlight active card */
+  box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+}
+
+.report-card .metric-header {
+  width: 100%; /* Take full width of card */
+  justify-content: center; /* Center the icon/trend line if no text */
+  margin-bottom: 10px;
+}
+
+.report-card .metric-icon {
+  font-size: 48px; /* Larger icon for these cards */
+  position: relative; /* Remove absolute positioning from parent metric-header */
+  top: auto;
+  left: auto;
+}
+
+.report-card .trend-line-container {
+  display: none; /* Hide the trend line by default for report cards */
+  /* If you want a line, adjust its position within the centered header */
+}
+
+.report-card-content {
+  flex-grow: 1; /* Allow content to take available space */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center content */
+  padding: 0 15px; /* Add some horizontal padding */
+}
+
+.report-card-title {
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin-bottom: 8px !important;
+  line-height: 1.3;
+}
+
+.report-card-description {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Overrides for Ant Design Typography margins */
+.ant-typography {
+  margin-bottom: 0 !important;
+}
+
+/* Ensure consistent spacing around Typography components */
+.ant-typography + .ant-typography {
+  margin-top: 0 !important;
+}
+
+/* Loading Spinner and Empty states */
+.loading-spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
