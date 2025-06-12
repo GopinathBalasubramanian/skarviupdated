@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Add this line
+import { useNavigate } from "react-router-dom";
+
 import {
   Button,
   Card,
@@ -11,8 +12,8 @@ import {
   Row,
   Col,
   Modal,
-  Space, // Import Space for consistent spacing
-  Typography // For text styling
+  Space,
+  Typography
 } from "antd";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -24,13 +25,13 @@ import {
   ArrowUpOutlined,
   CalendarOutlined,
   FileTextOutlined,
-  LineChartOutlined, // For graph representation
-  MoneyCollectOutlined, // For cash
-  ReadOutlined, // For invested
-  MinusCircleOutlined // For withdrawals
+  LineChartOutlined,
+  MoneyCollectOutlined,
+  ReadOutlined,
+  MinusCircleOutlined
 } from '@ant-design/icons';
-import "./Dashboard.css"; // We will define styles here
-// import "./Navbar.css"; // Not strictly needed for dashboard UI
+import "./Dashboard.css";
+import "./scrollablecss.css"
 
 const { Title, Text } = Typography;
 
@@ -39,16 +40,22 @@ const API_URL = "http://127.0.0.1:8000/physical_trades";
 const formatNumber = (value: number | undefined | null) => {
   return typeof value === "number" && !isNaN(value)
     ? value.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
     : "-";
 };
 
 const formatDate = (value: string | undefined | null) => {
   if (!value) return "-";
   try {
-    return new Date(value).toLocaleDateString("en-GB");
+    // You might want to use a more robust date formatting library like 'date-fns' for production
+    const date = new Date(value);
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return value; // Return original if invalid
+    }
+    return date.toLocaleDateString("en-GB");
   } catch {
     return value;
   }
@@ -86,13 +93,49 @@ const tableConfigs: { [key: string]: TableConfig } = {
 type TableConfigKey = keyof typeof tableConfigs;
 
 const Dashboard = () => {
-  const navigate = useNavigate(); // Add this line
+  const navigate = useNavigate();
   const tableKeys = Object.keys(tableConfigs) as TableConfigKey[];
   const [activeTableKey, setActiveTableKey] = useState<TableConfigKey | null>(null);
   const [columns, setColumns] = useState<any[]>([]);
   const [tableData, setTableData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  // Example hardcoded awaiting actions - In a real app, this would come from an API
+  const awaitingActions = [
+    {
+      id: 1,
+      icon: <FileTextOutlined />,
+      title: "Review Trade Approval: #TRD-2025-00123",
+      description: "Requires your authorization - 5 Mins ago",
+      dueDate: null,
+      type: "trade-approval",
+    },
+    {
+      id: 2,
+      icon: <DollarOutlined />,
+      title: "Address Margin Call: Account ID 7890",
+      description: "Urgent action required - Due Today!",
+      dueDate: new Date().toISOString(), // Dynamically set to today for demo
+      type: "margin-call",
+    },
+    {
+      id: 3,
+      icon: <CalendarOutlined />,
+      title: "Upcoming Contract Expiry: Crude Oil Jul'25",
+      description: "Review or roll over before 2025-07-20",
+      dueDate: "2025-07-20T00:00:00Z",
+      type: "contract-expiry",
+    },
+    {
+      id: 4,
+      icon: <UserOutlined />,
+      title: "Complete KYC Profile Update",
+      description: "Mandatory for continued trading - 3 days left",
+      dueDate: "2025-06-15T00:00:00Z",
+      type: "kyc-update",
+    }
+  ];
 
   const showModal = (key: TableConfigKey) => {
     setActiveTableKey(key);
@@ -106,10 +149,32 @@ const Dashboard = () => {
     setColumns([]);
   };
 
-  // Dummy function for metric card clicks
   const handleMetricCardClick = (metricName: string) => {
     message.info(`Clicked on ${metricName}`);
     // You can add navigation or more specific actions here
+  };
+
+  const handleActionClick = (action: any) => {
+    message.info(`Clicked Awaiting Action: ${action.title}`);
+    // Example: Navigate based on action type
+    switch (action.type) {
+      case 'trade-approval':
+        navigate('/approvals'); // Assuming you have an /approvals route
+        break;
+      case 'margin-call':
+        navigate('/accounts/margin'); // Example route for margin management
+        break;
+      case 'contract-expiry':
+        navigate('/portfolio/contracts'); // Example route for contracts
+        break;
+      case 'kyc-update':
+        navigate('/profile/kyc'); // Example route for KYC updates
+        break;
+      default:
+        
+        // Handle generic or unknown action types
+        message.warning(`No specific route for action type: ${action.type}`);
+    }
   };
 
   useEffect(() => {
@@ -183,45 +248,54 @@ const Dashboard = () => {
       {/* 2. Main Content Area Below Banner */}
       <div className="dashboard-main-content">
         {/* Awaiting Action & Quick Tasks Section */}
-        <Row gutter={[24, 24]} className="section-row">
-          <Col xs={24} lg={12}>
-            <Card title="Awaiting Your Action" className="action-card" bordered={false}>
-              <div className="task-item">
-                <Space>
-                  <FileTextOutlined className="task-icon" />
-                  <div>
-                    <Text strong>Submit Interview Feedback: Andrew Jeffers</Text>
-                    <br />
-                    <Text type="secondary">Your Tasks - 1 Minute ago</Text>
-                  </div>
-                </Space>
-              </div>
-              <div className="task-item">
-                <Space>
-                  <CalendarOutlined className="task-icon" />
-                  <div>
-                    <Text strong>Transition Back to Office</Text>
-                    <br />
-                    <Text type="secondary">Journey - 10 Required Steps</Text>
-                    <br />
-                    <Text className="due-date-text">NEXT STEP DUE 09/08/21</Text>
-                  </div>
-                </Space>
-                </div>
+
+        <Row gutter={[24, 24]} className="section-row" style={{borderRadius:"30px"}}>
+          <Col xs={24} lg={12} style={{borderRadius:"30px"}}>
+            <div className="scrollable-col">
+              <Card title="Awaiting Your Action" className="action-card" bordered={false}>
+                {awaitingActions.length > 0 ? (
+                  awaitingActions.map((action) => (
+                    <div key={action.id} className="task-item" onClick={() => handleActionClick(action)}>
+                      <Space>
+                        {action.icon}
+                        <div>
+                          <Text strong>{action.title}</Text>
+                          <br />
+                          <Text type="secondary">{action.description}</Text>
+                          {action.dueDate && (
+                            <>
+                              <br />
+                              <Text className="due-date-text">
+                                DUE {formatDate(action.dueDate)}
+                              </Text>
+                            </>
+                          )}
+                        </div>
+                      </Space>
+                    </div>
+                  ))
+                ) : (
+                  <Empty description="No actions currently awaiting your attention." image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                )}
               </Card>
+            </div>
           </Col>
+
           <Col xs={24} lg={12}>
-            <Card title="Quick Tasks" className="quick-tasks-card" bordered={false}>
-              <Space direction="vertical" style={{ width: '100%'}}>
-                <Button block className="quick-task-button" onClick={() => navigate('/physical-trades')}>
-                  Physical Trade
-                </Button>        
-                <Button block className="quick-task-button" onClick={() => navigate('/paper-trades')}>Paper Trade</Button>
-                <Button block className="quick-task-button">Give Feedback</Button>
-              </Space> {/* <--- Add this closing tag if it's missing in Homeboard.tsx */}
-            </Card>
+            <div className="scrollable-col1">
+              <Card title="Quick Tasks" className="quick-tasks-card" bordered={false}>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Button block className="quick-task-button" onClick={() => navigate('/physical-trades')}>
+                    Physical Trade
+                  </Button>
+                  <Button block className="quick-task-button" onClick={() => navigate('/paper-trades')}>Paper Trade</Button>
+                  <Button block className="quick-task-button">Give Feedback</Button>
+                </Space>
+              </Card>
+            </div>
           </Col>
         </Row>
+
 
         {/* Existing Report Buttons Section - Now styled like Metric Cards */}
         <Row gutter={[24, 24]} className="section-row report-cards-row">
@@ -229,36 +303,31 @@ const Dashboard = () => {
             <Title level={4}>Detailed Financial Reports</Title>
           </Col>
           {tableKeys.map((key) => (
-            <Col key={key} xs={24} sm={12} lg={8}> {/* Adjust Col sizes as needed */}
+            <Col key={key} xs={24} sm={12} lg={8}>
               <Card
                 className={`metric-card report-card ${activeTableKey === key ? 'active-report-card' : ''}`}
                 bordered={false}
                 onClick={() => showModal(key)}
               >
                 <div className="metric-header" style={{ marginBottom: '5px' }}>
-                  {/* Choose an appropriate icon for each report type */}
-                  {key === 'QuantityPositionSummary' && <LineChartOutlined className="metric-icon" style={{ color: '#8a2be2' }} />} {/* Purple */}
-                  {key === 'QuantityPositionDaily' && <CalendarOutlined className="metric-icon" style={{ color: '#00a86b' }} />} {/* Green */}
-                  {key === 'QPESummary' && <DollarOutlined className="metric-icon" style={{ color: '#ff69b4' }} />} {/* Hot Pink */}
-                  {key === 'QPEDaily' && <ClockCircleOutlined className="metric-icon" style={{ color: '#4169e1' }} />} {/* Royal Blue */}
-                  {key === 'VaRReport' && <FileTextOutlined className="metric-icon" style={{ color: '#dc143c' }} />} {/* Crimson */}
+                  {key === 'QuantityPositionSummary' && <LineChartOutlined className="metric-icon" style={{ color: '#8a2be2' }} />}
+                  {key === 'QuantityPositionDaily' && <CalendarOutlined className="metric-icon" style={{ color: '#00a86b' }} />}
+                  {key === 'QPESummary' && <DollarOutlined className="metric-icon" style={{ color: '#ff69b4' }} />}
+                  {key === 'QPEDaily' && <ClockCircleOutlined className="metric-icon" style={{ color: '#4169e1' }} />}
+                  {key === 'VaRReport' && <FileTextOutlined className="metric-icon" style={{ color: '#dc143c' }} />}
                   <div className="trend-line-container">
-                    {/* Simplified trend line, can be customized per report */}
-                    {/* Removed explicit gradients here, can be added per key if needed */}
                   </div>
                 </div>
                 <div className="report-card-content">
                   <Title level={4} className="report-card-title">{tableConfigs[key].label}</Title>
                   <Text className="report-card-description">
-                    {/* Add a brief description for each report type */}
                     {key === 'QuantityPositionSummary' && 'Overview of asset quantities.'}
                     {key === 'QuantityPositionDaily' && 'Daily breakdown of asset quantities.'}
                     {key === 'QPESummary' && 'Summary of Quantity-Price Exposure.'}
                     {key === 'QPEDaily' && 'Daily Quantity-Price Exposure details.'}
                     {key === 'VaRReport' && 'Value at Risk assessment report.'}
                   </Text>
-                  {/* Optional: Add a small data point if available, e.g., 'Last updated: Today' */}
-                  <Text type="secondary" style={{ fontSize: '0.8em', marginTop: '10px', display: 'block' }}>Click to view details</Text>
+                  {/* <Text type="secondary" style={{ fontSize: '0.8em', marginTop: '10px', display: 'block' }}>Click to view details</Text> */}
                 </div>
               </Card>
             </Col>
@@ -266,7 +335,6 @@ const Dashboard = () => {
         </Row>
       </div>
 
-      {/* Modal for displaying table data (kept as is) */}
       <Modal
         title={activeTableKey ? tableConfigs[activeTableKey]?.label : "Table Data"}
         open={isModalVisible}
@@ -274,7 +342,7 @@ const Dashboard = () => {
         footer={null}
         width={1000}
         centered
-        // destroyOnHidden={true}
+        destroyOnClose={true}
       >
         <AnimatePresence mode="wait">
           {isModalVisible && (

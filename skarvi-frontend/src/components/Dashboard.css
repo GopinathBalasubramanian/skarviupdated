@@ -4,6 +4,28 @@
   min-height: 100vh;
 }
 
+
+.dashboard-container {
+  background-image: url('/skarvi-frontend/src/assets/etrm.jpg'); /* Adjust path as needed */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.dashboard-container::before {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3); /* Adjust opacity */
+  z-index: 0;
+}
+
+.dashboard-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+
 .dashboard-buttons-panel {
   margin-bottom: 24px;
   padding: 20px;
@@ -481,16 +503,7 @@ h1,
   background-color: orange;
   color: white;
 }
-You're absolutely right! I've already provided the CSS for the updated `Dashboard.tsx` in my previous comprehensive response.
 
-I will provide it again, ensuring it's complete and matches the updated JSX for `Dashboard.tsx`.
-
-Here's the `Dashboard.css` content you need:
-
-**`src/components/Dashboard.css`**
-
-```css
-/* src/components/Dashboard.css */
 
 .dashboard-container {
   min-height: 100vh;
@@ -501,8 +514,10 @@ Here's the `Dashboard.css` content you need:
 /* --- Top Banner Section --- */
 .dashboard-header-banner {
   height: 200px; /* Adjust height as needed */
-  background: linear-gradient(135deg, #a8dadc 0%, #457b9d 100%); /* Blue/green gradient to simulate image */
+  background: linear-gradient(135deg, #83a9aa 0%, #457b9d 100%); /* Blue/green gradient to simulate image */
   position: relative;
+  border-radius: 0px 0px 20px 20px;
+  width: 100% !important;
   overflow: hidden; /* Hide overflow from any simulated shapes */
   padding: 20px 50px; /* Padding for content */
   display: flex;
@@ -591,16 +606,17 @@ Here's the `Dashboard.css` content you need:
   height: 48px; /* Taller buttons */
   font-size: 1rem;
   font-weight: 500;
-  border-radius: 6px;
-  border-color: #d9d9d9;
-  color: rgba(0, 0, 0, 0.85);
+  border-radius: 15px;
+  border-color: #1F325C;
+  color: #ffffff;
+  background-color: #1F325C;
   box-shadow: none; /* Remove default button shadow */
 }
 
 .quick-tasks-card .quick-task-button:hover,
 .quick-tasks-card .quick-task-button:focus {
-  border-color: #1890ff;
-  color: #1890ff;
+  border-color: #1062af !important;
+  color: #000102 !important;
 }
 
 /* --- Metric Cards (3M, 1M, $294) --- */
@@ -747,10 +763,11 @@ Here's the `Dashboard.css` content you need:
 }
 
 .report-card-title {
-  font-size: 1.2rem !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
   color: #333 !important;
-  margin-bottom: 8px !important;
+  margin-top: 20px !important;
+  /* margin-bottom: 8px !important; */
   line-height: 1.3;
 }
 

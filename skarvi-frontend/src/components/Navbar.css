@@ -16,12 +16,21 @@
     filter: brightness(0) invert(1); /* Ensures white color */
   }
   
-  #navbar-dropdown::after {
-    transform: translateY(1px); /* Adjust this value to move it down */
-    padding-left: 0px;
-    
-  }
-  
+#navbar-dropdown {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#navbar-dropdown .dropdown-toggle {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: white !important;
+}
+
   /* Active link - white color */
   .navbar-link.active {
     color: white !important;
@@ -80,9 +89,6 @@
   transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
-#logout{
-  color: white;
-}
 .your-toggle-class:focus {
   box-shadow: 0 0 0 2px white; /* White glow instead of black */
 }
@@ -98,17 +104,13 @@
 .navbar-nav .nav-link:hover {
   background-color: white !important;
   color: black !important;
-  border-radius: 2px;
+  border-radius: 0px;
 }
 /* Ensure no hover effect on the 'User' span in the dropdown toggle */
 .logout-dropdown .dropdown-toggle {
-  background-color: transparent !important; /* Remove hover background */
-  color: black !important; /* Ensure text color is black */
-}
-
-.logout-dropdown .dropdown-toggle:hover {
-  background-color: transparent !important; /* Remove hover background */
-  color: black !important; /* Keep text color black */
+  /* background-color: transparent !important; */
+    margin-bottom: 20px !important;
+  color: black !important;
 }
 
 /* Ensure 'User' span does not inherit any hover effects */
@@ -121,6 +123,10 @@
 /* Default color for Trades dropdown title */
 #navbar-dropdown-trades {
   color: white; /* Set default color to white */
+}
+
+#navbar-dropdown .dropdown-toggle::after {
+  display: none !important;
 }
 
 /* Trades Dropdown hover effect (text color turns black on hover) */

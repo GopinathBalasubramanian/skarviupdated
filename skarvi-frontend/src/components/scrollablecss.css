@@ -1,0 +1,25 @@
+/* .scrollable-container {
+  max-height: 300px; 
+  overflow-y: auto;
+  padding-right: 8px; 
+    overflow-x: hidden;       
+} */
+
+.scrollable-col {
+  max-height: 260px;    /* adjust height as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;   /* space for scrollbar */
+  border-radius: 10px;
+}
+
+
+/* Optional: smooth scrollbar on webkit browsers */
+.scrollable-col::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-col::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
