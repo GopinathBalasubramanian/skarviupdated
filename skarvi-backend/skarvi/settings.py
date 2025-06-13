@@ -177,7 +177,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'localhost:5173',
-    'https://skarvisystems.onrender.com',
+    'skarvisystems.onrender.com',
 ]
 
 # CORS_ALLOWED_ORIGINS = [
