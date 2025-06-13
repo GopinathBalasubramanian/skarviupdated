@@ -148,14 +148,14 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = False
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
+    # "http://localhost:8000",
     "https://skarvi-frontend-cloud.vercel.app",
-    "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",
     "https://skarvi-frontend-cl-git-ef9172-gopinathbalasubramanians-projects.vercel.app",
+     "skarvisystems.onrender.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
+    # "http://localhost:8000",
     "https://skarvi-frontend-cloud.vercel.app",
     "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",
     "https://skarvi-frontend-cl-git-ef9172-gopinathbalasubramanians-projects.vercel.app",  # ✅ add this one
@@ -200,15 +200,10 @@ ALLOWED_HOSTS = [
 # CSRF_TRUSTED_ORIGINS = [
 #     "https://skarvi-frontend-cloud.vercel.app",
 #     "https://skarvi-frontend-cloud-mjmx18zns.vercel.app",
-#     # "https://xn0tvwlm-8000.inc1.devtunnels.ms"
+#     "https://xn0tvwlm-8000.inc1.devtunnels.ms"
 # ]
 
 
-# Enable CSRF cookie
-# CSRF_COOKIE_HTTPONLY = False
-# CSRF_COOKIE_SAMESITE = 'Lax'
-# SESSION_COOKIE_SAMESITE = 'Lax'
-# SESSION_COOKIE_SECURE = False
 
 
 # Password validation
