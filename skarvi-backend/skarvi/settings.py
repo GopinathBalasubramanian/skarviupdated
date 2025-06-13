@@ -151,7 +151,7 @@ CORS_ALLOWED_ORIGINS = [
     # "http://localhost:8000",
     "https://skarvi-frontend-cloud.vercel.app",
     "https://skarvi-frontend-cl-git-ef9172-gopinathbalasubramanians-projects.vercel.app",
-     "skarvisystems.onrender.com",
+    "skarvisystems.onrender.com",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -177,7 +177,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'localhost:5173',
-    'skarviupdated-production-b1de.up.railway.app',
+    'https://skarvisystems.onrender.com',
 ]
 
 # CORS_ALLOWED_ORIGINS = [
