@@ -182,7 +182,7 @@ const PhysicalTradesEditTrade = () => {
           marginBottom: "12px",
         }}
       >
-        Physical Trades &gt; Edit Trades
+        {/* Physical Trades &gt; Edit Trades */}
       </div>
 
       <div

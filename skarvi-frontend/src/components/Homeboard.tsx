@@ -32,10 +32,9 @@ import {
 } from '@ant-design/icons';
 import "./Dashboard.css";
 import "./scrollablecss.css"
-
+import { API_URL } from "../utils/utils";
 const { Title, Text } = Typography;
 
-const API_URL = "http://127.0.0.1:8000/physical_trades";
 
 const formatNumber = (value: number | undefined | null) => {
   return typeof value === "number" && !isNaN(value)
@@ -70,23 +69,23 @@ interface TableConfig {
 const tableConfigs: { [key: string]: TableConfig } = {
   QuantityPositionSummary: {
     label: "Quantity Position Summary",
-    url: `${API_URL}/api/quantity-position-summary`,
+    url: `${API_URL}/physical_trades/api/quantity-position-summary`,
   },
   QuantityPositionDaily: {
     label: "Quantity Position Daily",
-    url: `${API_URL}/api/quantity-position-daily`,
+    url: `${API_URL}/physical_trades/api/quantity-position-daily`,
   },
   QPESummary: {
     label: "QPE Summary",
-    url: `${API_URL}/api/qpe-summary`,
+    url: `${API_URL}/physical_trades/api/qpe-summary`,
   },
   QPEDaily: {
     label: "QPE Daily",
-    url: `${API_URL}/api/qpe-daily`,
+    url: `${API_URL}/physical_trades/api/qpe-daily`,
   },
   VaRReport: {
     label: "VaR Report",
-    url: `${API_URL}/api/var-report`,
+    url: `${API_URL}/physical_trades/api/var-report`,
   },
 };
 

@@ -9,11 +9,11 @@ const PhysicalTrades: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Container className="physical-trades-container" style={{ marginTop: "-12px" }}>
+    <Container className="physical-trades-container" style={{ marginTop: "0px",color:"#1F325C",fontWeight:"bold" }}>
         {/* Breadcrumb Navigation */}
         <Breadcrumb className="mt-3">
-        <Breadcrumb.Item active>Trades</Breadcrumb.Item> {/* Link to Trades */}
-        <Breadcrumb.Item href="/physical-trades">Physical Trades</Breadcrumb.Item> {/* Current Page */}
+        <Breadcrumb.Item >Trades</Breadcrumb.Item> 
+        <Breadcrumb.Item href="/physical-trades">Physical Trades</Breadcrumb.Item> 
       </Breadcrumb>
       <Row className="physical-trades-grid g-4">
         

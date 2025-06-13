@@ -137,12 +137,13 @@ const Papertrades: React.FC = () => {
   }
 
   return (
-    <Container className="cards-container" style={{ marginTop: "-12px" }}>
-      {/* Breadcrumb Navigation */}
-      <Breadcrumb className="mt-3">
-        <Breadcrumb.Item active>Trades</Breadcrumb.Item>
-        <Breadcrumb.Item href="/paper-trades">Paper Trades</Breadcrumb.Item>
-      </Breadcrumb>
+    <Container className="cards-container" style={{ marginTop: "0px" }}> {/* Keep margin-top here if it's for the container */}
+  {/* Breadcrumb Navigation */}
+  <Breadcrumb className="mt-3">
+    <Breadcrumb.Item active style={{ fontWeight: "bold", color: "#1F325C" }}>Trades</Breadcrumb.Item>
+    <Breadcrumb.Item href="/paper-trades" style={{ fontWeight: "bold", color: "#1F325C" }}>Paper Trades</Breadcrumb.Item>
+  </Breadcrumb>
+
       <Row className="cards-grid g-4">
         {/* Add New Trades and Create a Paper Entry */}
         <Col xs={12} sm={6} md={4} lg={4}>
@@ -158,8 +159,8 @@ const Papertrades: React.FC = () => {
               <Button
                 className="launch-button"
                 style={{
-                  marginBottom: "10px",
-                  marginTop: "30px",
+                  marginBottom: "40px",
+                  marginTop: "10px",
                   alignSelf: "flex-end",
                 }}
                 onClick={() => navigate("/add-new-trade")}
@@ -233,8 +234,8 @@ const Papertrades: React.FC = () => {
               <Button
                 className="launch-button"
                 style={{
-                  marginBottom: "10px",
-                  marginTop: "10px",
+                  marginBottom: "20px",
+                  marginTop: "-10px",
                   alignSelf: "flex-end",
                 }}
                 onClick={() => setShowModal(true)}

@@ -169,17 +169,17 @@ const TabbedTransactionForm: React.FC = () => {
   );
 
   return (
-    <div style={{ padding: "32px 16px" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto 8px auto", fontSize: "16px", fontWeight: "bold", color: "#333" }}>
-  Trades &gt;{" "}
-  <span
-    style={{ color: "#1F325C", cursor: "pointer" }}
-    onClick={() => navigate("/physical-trades")}
-  >
-    Physical Trade
-  </span>
-  &gt; Add Bought Trade
-</div>
+//     <div style={{ padding: "32px 16px" }}>
+//       <div style={{ maxWidth: 1200, margin: "0 auto 8px auto", fontSize: "16px", fontWeight: "bold", color: "#333" }}>
+//   Trades &gt;{" "}
+//   <span
+//     style={{ color: "#1F325C", cursor: "pointer" }}
+//     onClick={() => navigate("/physical-trades")}
+//   >
+//     Physical Trade
+//   </span>
+//   &gt; Add Bought Trade
+// </div>
 
       <div style={{
         fontFamily: "Arial, sans-serif",
@@ -189,6 +189,7 @@ const TabbedTransactionForm: React.FC = () => {
         borderRadius: "8px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
         background: "#f9f9f9",
+        marginTop:"40px",
       }}>
         <div style={{
           display: "flex",
@@ -257,7 +258,7 @@ const TabbedTransactionForm: React.FC = () => {
           </form>
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 

@@ -520,6 +520,65 @@ class CloneTransactionView(APIView):
         }, status=status.HTTP_201_CREATED)
 
 
+
+
+class InterimTransactionSPR(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        tran_ref_no = request.query_params.get('tran_ref_no')
+        if tran_ref_no:
+            queryset = InterimTransactionSPR.objects.filter(tran_ref_no=tran_ref_no)
+            serializer = InterimTransactionSprSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            queryset = InterimTransactionSPR.objects.all()
+            serializer = InterimTransactionSprSerializer(queryset, many=True)
+            return Response(serializer.data)
+
+    @transaction.atomic
+    def post(self, request):
+        data = request.data.copy()
+        tran_ref_no = data.get('tran_ref_no')
+
+        instance = InterimTransactionSPR.objects.filter(
+            tran_ref_no=tran_ref_no
+        ).first()
+
+        if instance:
+            serializer = InterimTransactionSprSerializer(instance, data=data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            obj = serializer.save()
+            return Response(InterimTransactionSprSerializer(obj).data, status=status.HTTP_200_OK)
+        else:
+            serializer = InterimTransactionSprSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            obj = serializer.save()
+            return Response(InterimTransactionSprSerializer(obj).data, status=status.HTTP_201_CREATED)
+
+    @transaction.atomic
+    def put(self, request):
+        data = request.data.copy()
+        tran_ref_no = data.get('tran_ref_no')
+        instance = get_object_or_404(
+            InterimTransactionSPR,
+            tran_ref_no=tran_ref_no
+        )
+        serializer = InterimTransactionSprSerializer(instance, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        obj = serializer.save()
+        return Response(InterimTransactionSprSerializer(obj).data, status=status.HTTP_200_OK)
+
+    @transaction.atomic
+    def delete(self, request):
+        tran_ref_no = request.data.get('tran_ref_no')
+        instance = get_object_or_404(
+            InterimTransactionSPR,
+            tran_ref_no=tran_ref_no
+        )
+        instance.delete()
+        return Response({"detail": "Deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
 class QuantityPositionSummaryListView(APIView):
     def get(self, request):
         queryset = QuantityPositionSummary.objects.all()

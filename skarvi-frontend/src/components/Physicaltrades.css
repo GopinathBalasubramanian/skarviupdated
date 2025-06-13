@@ -49,26 +49,6 @@
   margin-top: 10px;
 }
 
-/* Fix for Launch Button */
-.physical-trades-launch-button {
-  background-color: #1F325C; /* Dark lavender */
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 3px;
-  padding: 6px 12px;
-  margin-top: auto; /* Push to bottom */
-  transition: all 0.3s ease; /* Smooth transition for hover effect */
-}
-
-/* Hover effect without changing background color */
-.physical-trades-launch-button:hover {
-  background-color: #000080; /* Keep the same background color */
-  color: #fff; /* Ensure text color stays the same */
-  transform: scale(1.15); /* Slightly increase the size */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-  cursor: pointer; /* Add a pointer cursor for clarity */
-}
 
 /* Fix for Responsive Layout */
 @media (max-width: 768px) {
@@ -101,7 +81,7 @@
   font-weight: bold;
   border-radius: 3px;
   padding: 6px 12px;
-  margin-top: auto;
+  margin-top: 30px;
   transition: all 0.3s ease;
 }
 
@@ -134,11 +114,11 @@
 }
 /* Custom Breadcrumb Link Styles */
 .breadcrumb-item a {
-  color: #6c757d; /* Change this to your desired color (e.g., gray) */
+  color: #1F325C; /* Change this to your desired color (e.g., gray) */
   text-decoration: none; /* Remove underline */
 }
 
 .breadcrumb-item a:hover {
   color: #0056b3; /* Change this to your desired hover color (e.g., darker blue) */
-  text-decoration: underline; /* Optional: Add underline on hover */
+  text-decoration: none; /* Optional: Add underline on hover */
 }

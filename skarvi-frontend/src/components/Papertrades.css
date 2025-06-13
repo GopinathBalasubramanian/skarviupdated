@@ -125,7 +125,7 @@
   font-weight: bold;
   border-radius: 3px;
   padding: 6px 12px;
-  margin-top: auto; /* Push to bottom */
+  margin-bottom: 20px; /* Push to bottom */
   transition: all 0.3s ease; /* Smooth transition for hover effect */
 }
 
@@ -167,7 +167,7 @@
   font-weight: bold;
   border-radius: 3px;
   padding: 6px 12px;
-  margin-top: auto;
+  margin-bottom: 20px !important;
   transition: all 0.3s ease;
 }
 
@@ -204,15 +204,15 @@
 .breadcrumb > .breadcrumb-item + .breadcrumb-item::before {
   content: ">"; /* Replace the default slash with a forward arrow */
   padding: 0 0.3rem; /* Add spacing around the separator */
-  color: #6c757d; /* Optional: Change the separator color */
+  color: #1F325C; /* Optional: Change the separator color */
 }
 /* Custom Breadcrumb Link Styles */
 .breadcrumb-item a {
-  color: #6c757d; /* Change this to your desired color (e.g., gray) */
+  color: #1F325C; /* Change this to your desired color (e.g., gray) */
   text-decoration: none; /* Remove underline */
 }
 
 .breadcrumb-item a:hover {
   color: #1F325C; /* Change this to your desired hover color (e.g., darker blue) */
-  text-decoration: underline; /* Optional: Add underline on hover */
+  text-decoration: none; /* Optional: Add underline on hover */
 }
