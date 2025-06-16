@@ -5,7 +5,7 @@ export function loginUser(username: string, password: string) {
     console.log("Attempting login with:", { username, password }); // <-- Add this
     console.log("API URL:", `${API_URL}/api/login/token/`); // <-- And this
 
-    return axios.post(`${API_URL}/api/token/`, { username, password }, {
+    return axios.post(`${API_URL}/api/login/token/`, { username, password }, {
         headers: {
             'Content-Type': 'application/json',
         }
