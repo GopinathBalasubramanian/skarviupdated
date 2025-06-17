@@ -152,7 +152,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://skarvi-frontend-cloud.vercel.app",
     "https://skarvi-frontend-cl-git-ef9172-gopinathbalasubramanians-projects.vercel.app",
     "https://skarvisystems-fkxwmohjz-gopinathbalasubramanians-projects.vercel.app",
-    "https://skarvisystems-7kadrd0ff-gopinathbalasubramanians-projects.vercel.app", 
+    "https://skarvisystems-7kadrd0ff-gopinathbalasubramanians-projects.vercel.app",  # <- Add this
 
 ]
 

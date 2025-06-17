@@ -236,7 +236,7 @@ const Dashboard = () => {
       <div className="dashboard-header-banner">
         <Row align="middle" justify="space-between" className="banner-content">
           <Col>
-            <Title level={2} className="greeting-text">Good Morning, Skarvian</Title>
+            <Title level={2} className="greeting-text">Good Morning, Admin!</Title>
           </Col>
           <Col>
             <Text className="location-weather"><EnvironmentOutlined /> San Francisco - 68° ☀️</Text>

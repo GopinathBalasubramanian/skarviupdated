@@ -96,6 +96,25 @@ class SellerTransactionSprView(APIView):
         tran_ref_no = data.get('Tran_Ref_No') or data.get('tran_ref_no')
         purchase_contract_id = data.get('Purchasecontractid') or data.get('purchase_contract_id')
 
+        # Auto-generate Tran Ref No if not present
+        if not tran_ref_no:
+            today = datetime.today()
+            prefix = "C1TN"
+            month_code = today.strftime("%Y%m")  # e.g., "202506"
+            base_ref = f"{prefix}{month_code}"
+
+            max_ref = SellerTransactionSpr.objects.filter(
+                tran_ref_no__startswith=base_ref
+            ).aggregate(max_ref=Max("tran_ref_no"))["max_ref"]
+
+            if max_ref:
+                next_seq = str(int(max_ref[-5:]) + 1).zfill(5)
+            else:
+                next_seq = "00001"
+
+            tran_ref_no = f"{base_ref}{next_seq}"
+            data["tran_ref_no"] = tran_ref_no  # ensure it's used in serializer
+
         # Numeric conversions
         num1 = num_with_comma(data.get("seller_contract_quantiity_mton_air"))
         num2 = num_with_comma(data.get("seller_contract_quantiity_barrels"))

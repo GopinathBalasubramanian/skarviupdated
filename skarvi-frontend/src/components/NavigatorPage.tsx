@@ -95,8 +95,9 @@ const NavigatorPage = () => {
           style={{
             fontWeight: 700,
             fontSize: "2.0rem",
-            marginTop:"-20px",
-            marginBottom: "30px",
+            marginTop: "-60px",
+            marginBottom: "50px",
+            marginLeft: "-60px",
             color: "#1F325C",
             lineHeight: "1.3",
             textShadow: "1px 2px 6px rgba(0,0,0,0.05)",
@@ -114,21 +115,72 @@ const NavigatorPage = () => {
           }}
         >
           {[
-            { label: "Navigator", path: "/dashboard" },
-            { label: "Trader Co-pilot", path: "/development" },
-            { label: "Demurrage Manager", path: "/development" },
-            { label: "Fleet Compass", path: "/development" },
+            {
+              label: "Navigator",
+              path: "/dashboard",
+              description:
+                "A complete enterprise-class ETRM solution with automated functionalities covering the full life cycle of a trade.",
+            },
+            {
+              label: "Trader Co-pilot",
+              path: "/development",
+              description:
+                "Powered by Augmented Intelligence to help spot opportunities, optimize positions, manage risks, and maximize profitability.",
+            },
+            {
+              label: "Demurrage Manager",
+              path: "/development",
+              description:
+                "A comprehensive solution to monitor, calculate, and control demurrage exposure across global shipments.",
+            },
+            {
+              label: "Fleet Compass",
+              path: "/development",
+              description:
+                "An innovative platform for seamless ship and fleet management, voyage tracking, and operational efficiency.",
+            },
           ].map((item, idx) => (
-            <button
+            <div
               key={idx}
-              style={commonButtonStyle}
-              onClick={() => navigate(item.path)}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "40px",
+                background: "rgba(255, 255, 255, 0.6)",
+                padding: "20px 30px",
+                borderRadius: "16px",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.05)",
+                transition: "transform 0.3s ease",
+                maxWidth: "1000px",
+                width: "100%",
+              }}
             >
-              {item.label}
-            </button>
+              <button
+                style={commonButtonStyle}
+                onClick={() => navigate(item.path)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                {item.label}
+              </button>
+              <div style={{ flex: 1 }}>
+                <p
+                  style={{
+                    fontSize: "1rem",
+                    color: "#1F325C",
+                    margin: 0,
+                    fontWeight: 500,
+                    lineHeight: 1.6,
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  {item.description}
+                </p>
+              </div>
+            </div>
           ))}
+
         </div>
       </div>
 
