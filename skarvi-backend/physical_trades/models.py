@@ -204,8 +204,6 @@ class SellerTransactionSpr(models.Model):
     percentage = models.CharField(max_length=100, blank=True, null=True)
     percentage1 = models.CharField(max_length=100, blank=True, null=True)
     email_id = models.CharField(max_length=100, blank=True, null=True)
-    note = models.TextField(blank=True, null=True)
-
 
     
 class BuyerTransactionSpr(models.Model):
@@ -395,7 +393,6 @@ class BuyerTransactionSpr(models.Model):
     period_to = models.DateField(blank=True, null=True)
     inv_per = models.CharField(max_length=10, blank=True, null=True)
     email_id = models.EmailField(max_length=254, blank=True, null=True)
-    note = models.TextField(blank=True, null=True)
 
 
 class HistoryRecord(models.Model):
@@ -407,150 +404,3 @@ class HistoryRecord(models.Model):
 
     def __str__(self):
         return f"{self.user} changed {self.updated_column} on {self.date}"
-
-
-class QuantityPositionSummary(models.Model):
-    trade = models.CharField(max_length=100)  
-    pricing_period = models.CharField(max_length=200)  
-    qty_minus_0001_11 = models.FloatField(default=0.0)
-    qty_2025_01 = models.FloatField(default=0.0)
-    qty_2025_02 = models.FloatField(default=0.0)
-
-    def __str__(self):
-        return f"{self.trade} - {self.pricing_period}"
-
-
-class QuantityPositionDaily(models.Model):
-    trade = models.CharField(max_length=100)
-    pricing_period = models.CharField(max_length=200)
-
-    qty_01_jan = models.FloatField(default=0.0)
-    qty_02_jan = models.FloatField(default=0.0)
-    qty_03_jan = models.FloatField(default=0.0)
-    qty_04_jan = models.FloatField(default=0.0)
-    qty_05_jan = models.FloatField(default=0.0)
-    qty_06_jan = models.FloatField(default=0.0)
-    qty_07_jan = models.FloatField(default=0.0)
-    qty_08_jan = models.FloatField(default=0.0)
-    qty_09_jan = models.FloatField(default=0.0)
-    qty_10_jan = models.FloatField(default=0.0)
-    qty_11_jan = models.FloatField(default=0.0)
-    qty_12_jan = models.FloatField(default=0.0)
-    qty_13_jan = models.FloatField(default=0.0)
-    qty_14_jan = models.FloatField(default=0.0)
-    qty_15_jan = models.FloatField(default=0.0)
-    qty_16_jan = models.FloatField(default=0.0)
-    qty_17_jan = models.FloatField(default=0.0)
-    qty_18_jan = models.FloatField(default=0.0)
-    qty_19_jan = models.FloatField(default=0.0)
-    qty_20_jan = models.FloatField(default=0.0)
-    qty_21_jan = models.FloatField(default=0.0)
-    qty_22_jan = models.FloatField(default=0.0)
-    qty_23_jan = models.FloatField(default=0.0)
-    qty_24_jan = models.FloatField(default=0.0)
-    qty_25_jan = models.FloatField(default=0.0)
-    qty_26_jan = models.FloatField(default=0.0)
-    qty_27_jan = models.FloatField(default=0.0)
-    qty_28_jan = models.FloatField(default=0.0)
-    qty_29_jan = models.FloatField(default=0.0)
-    qty_30_jan = models.FloatField(default=0.0)
-    qty_31_jan = models.FloatField(default=0.0)
-
-    qty_minus_0001_11 = models.FloatField(default=0.0)
-    qty_2025_01 = models.FloatField(default=0.0)
-    qty_2025_02 = models.FloatField(default=0.0)
-
-    def __str__(self):
-        return f"{self.trade} - {self.pricing_period}"
-
-class QPESummary(models.Model):
-    pricing_period = models.CharField(max_length=200)
-    qty_2024_12 = models.FloatField(default=0.0)
-    qty_2025_01 = models.FloatField(default=0.0)
-    qty_2025_02 = models.FloatField(default=0.0)
-
-    def __str__(self):
-        return self.pricing_period
-
-# models.py
-
-class QPEDaily(models.Model):
-    pricing_period = models.CharField(max_length=200)
-
-    # Daily values for January
-    qty_01_jan = models.FloatField(default=0.0)
-    qty_02_jan = models.FloatField(default=0.0)
-    qty_03_jan = models.FloatField(default=0.0)
-    qty_04_jan = models.FloatField(default=0.0)
-    qty_05_jan = models.FloatField(default=0.0)
-    qty_06_jan = models.FloatField(default=0.0)
-    qty_07_jan = models.FloatField(default=0.0)
-    qty_08_jan = models.FloatField(default=0.0)
-    qty_09_jan = models.FloatField(default=0.0)
-    qty_10_jan = models.FloatField(default=0.0)
-    qty_11_jan = models.FloatField(default=0.0)
-    qty_12_jan = models.FloatField(default=0.0)
-    qty_13_jan = models.FloatField(default=0.0)
-    qty_14_jan = models.FloatField(default=0.0)
-    qty_15_jan = models.FloatField(default=0.0)
-    qty_16_jan = models.FloatField(default=0.0)
-    qty_17_jan = models.FloatField(default=0.0)
-    qty_18_jan = models.FloatField(default=0.0)
-    qty_19_jan = models.FloatField(default=0.0)
-    qty_20_jan = models.FloatField(default=0.0)
-    qty_21_jan = models.FloatField(default=0.0)
-    qty_22_jan = models.FloatField(default=0.0)
-    qty_23_jan = models.FloatField(default=0.0)
-    qty_24_jan = models.FloatField(default=0.0)
-    qty_25_jan = models.FloatField(default=0.0)
-    qty_26_jan = models.FloatField(default=0.0)
-    qty_27_jan = models.FloatField(default=0.0)
-    qty_28_jan = models.FloatField(default=0.0)
-    qty_29_jan = models.FloatField(default=0.0)
-    qty_30_jan = models.FloatField(default=0.0)
-    qty_31_jan = models.FloatField(default=0.0)
-
-    # Monthly totals
-    qty_2024_12 = models.FloatField(default=0.0)
-    qty_2025_01 = models.FloatField(default=0.0)
-    qty_2025_02 = models.FloatField(default=0.0)
-
-    def __str__(self):
-        return self.pricing_period
-
-# models.py
-
-class VaRReport(models.Model):
-    pricing_period = models.CharField(max_length=200)
-
-    qty_2024_12 = models.FloatField(default=0.0)
-    qty_2025_01 = models.FloatField(default=0.0)
-    qty_2025_02 = models.FloatField(default=0.0)
-    qty_total = models.FloatField(default=0.0)
-
-    platts_price = models.FloatField(default=0.0)
-    max_date = models.DateField(null=True, blank=True)
-    min_date = models.DateField(null=True, blank=True)
-
-    platts_max = models.FloatField(default=0.0)
-    platts_min = models.FloatField(default=0.0)
-
-    var_max_price = models.FloatField(default=0.0)
-    var_max_value = models.FloatField(default=0.0)
-    var_min_price = models.FloatField(default=0.0)
-    var_min_value = models.FloatField(default=0.0)
-
-    def __str__(self):
-        return self.pricing_period
-
-# models.py
-
-class DailyM2MPnL(models.Model):
-    category_description = models.CharField(max_length=255)
-
-    value_2025_05_01 = models.BigIntegerField(null=True, blank=True)
-    value_2024_12_31 = models.BigIntegerField(null=True, blank=True)
-    movement = models.BigIntegerField(null=True, blank=True)
-
-    def __str__(self):
-        return self.category_description

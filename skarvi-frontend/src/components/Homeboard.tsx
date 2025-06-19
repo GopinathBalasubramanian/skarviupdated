@@ -248,7 +248,46 @@ const Dashboard = () => {
       <div className="dashboard-main-content">
         {/* Awaiting Action & Quick Tasks Section */}
 
-        <Row gutter={[24, 24]} className="section-row" style={{borderRadius:"30px"}}>
+
+
+        {/* Existing Report Buttons Section - Now styled like Metric Cards */}
+        <Row gutter={[24, 24]} className="section-row report-cards-row">
+          <Col span={24} style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <Title level={4}>Detailed Financial Reports</Title>
+          </Col>
+          {tableKeys.map((key) => (
+            <Col key={key} xs={24} sm={12} lg={8}>
+              <Card
+                className={`metric-card report-card ${activeTableKey === key ? 'active-report-card' : ''}`}
+                bordered={false}
+                onClick={() => showModal(key)}
+              >
+                <div className="metric-header" style={{ marginBottom: '5px' }}>
+                  {key === 'QuantityPositionSummary' && <LineChartOutlined className="metric-icon" style={{ color: '#8a2be2' }} />}
+                  {key === 'QuantityPositionDaily' && <CalendarOutlined className="metric-icon" style={{ color: '#00a86b' }} />}
+                  {key === 'QPESummary' && <DollarOutlined className="metric-icon" style={{ color: '#ff69b4' }} />}
+                  {key === 'QPEDaily' && <ClockCircleOutlined className="metric-icon" style={{ color: '#4169e1' }} />}
+                  {key === 'VaRReport' && <FileTextOutlined className="metric-icon" style={{ color: '#dc143c' }} />}
+                  <div className="trend-line-container">
+                  </div>
+                </div>
+                <div className="report-card-content">
+                  <Title level={4} className="report-card-title">{tableConfigs[key].label}</Title>
+                  <Text className="report-card-description">
+                    {key === 'QuantityPositionSummary' && 'Overview of asset quantities.'}
+                    {key === 'QuantityPositionDaily' && 'Daily breakdown of asset quantities.'}
+                    {key === 'QPESummary' && 'Summary of Quantity-Price Exposure.'}
+                    {key === 'QPEDaily' && 'Daily Quantity-Price Exposure details.'}
+                    {key === 'VaRReport' && 'Value at Risk assessment report.'}
+                  </Text>
+                  {/* <Text type="secondary" style={{ fontSize: '0.8em', marginTop: '10px', display: 'block' }}>Click to view details</Text> */}
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+
+                <Row gutter={[24, 24]} className="section-row" style={{borderRadius:"30px"}}>
           <Col xs={24} lg={12} style={{borderRadius:"30px"}}>
             <div className="scrollable-col">
               <Card title="Awaiting Your Action" className="action-card" bordered={false}>
@@ -295,43 +334,6 @@ const Dashboard = () => {
           </Col>
         </Row>
 
-
-        {/* Existing Report Buttons Section - Now styled like Metric Cards */}
-        <Row gutter={[24, 24]} className="section-row report-cards-row">
-          <Col span={24} style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <Title level={4}>Detailed Financial Reports</Title>
-          </Col>
-          {tableKeys.map((key) => (
-            <Col key={key} xs={24} sm={12} lg={8}>
-              <Card
-                className={`metric-card report-card ${activeTableKey === key ? 'active-report-card' : ''}`}
-                bordered={false}
-                onClick={() => showModal(key)}
-              >
-                <div className="metric-header" style={{ marginBottom: '5px' }}>
-                  {key === 'QuantityPositionSummary' && <LineChartOutlined className="metric-icon" style={{ color: '#8a2be2' }} />}
-                  {key === 'QuantityPositionDaily' && <CalendarOutlined className="metric-icon" style={{ color: '#00a86b' }} />}
-                  {key === 'QPESummary' && <DollarOutlined className="metric-icon" style={{ color: '#ff69b4' }} />}
-                  {key === 'QPEDaily' && <ClockCircleOutlined className="metric-icon" style={{ color: '#4169e1' }} />}
-                  {key === 'VaRReport' && <FileTextOutlined className="metric-icon" style={{ color: '#dc143c' }} />}
-                  <div className="trend-line-container">
-                  </div>
-                </div>
-                <div className="report-card-content">
-                  <Title level={4} className="report-card-title">{tableConfigs[key].label}</Title>
-                  <Text className="report-card-description">
-                    {key === 'QuantityPositionSummary' && 'Overview of asset quantities.'}
-                    {key === 'QuantityPositionDaily' && 'Daily breakdown of asset quantities.'}
-                    {key === 'QPESummary' && 'Summary of Quantity-Price Exposure.'}
-                    {key === 'QPEDaily' && 'Daily Quantity-Price Exposure details.'}
-                    {key === 'VaRReport' && 'Value at Risk assessment report.'}
-                  </Text>
-                  {/* <Text type="secondary" style={{ fontSize: '0.8em', marginTop: '10px', display: 'block' }}>Click to view details</Text> */}
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
       </div>
 
       <Modal
