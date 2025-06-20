@@ -548,7 +548,7 @@ h1,
 /* --- Main Content Area --- */
 .dashboard-main-content {
   padding: 24px; /* Padding around the main content cards */
-  margin-top: 30px; /* Pull content up slightly to overlap the banner */
+  margin-top: -10px; /* Pull content up slightly to overlap the banner */
   position: relative;
   z-index: 1; /* Ensure it's above the banner */
 }

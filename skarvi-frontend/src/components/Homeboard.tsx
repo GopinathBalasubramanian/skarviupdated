@@ -244,11 +244,7 @@ const Dashboard = () => {
         </Row>
       </div>
 
-      {/* 2. Main Content Area Below Banner */}
       <div className="dashboard-main-content">
-        {/* Awaiting Action & Quick Tasks Section */}
-
-
 
         {/* Existing Report Buttons Section - Now styled like Metric Cards */}
         <Row gutter={[24, 24]} className="section-row report-cards-row">
